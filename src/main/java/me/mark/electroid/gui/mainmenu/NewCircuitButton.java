@@ -23,6 +23,5 @@ public class NewCircuitButton extends MainMenuButton {
     game.setGameState(GameState.PLAYING);
     new LoadingScreen(game, Arrays.asList(new CreateWorld(), new CreatePlayer()));
     electroid.getMainMenu().setShown(false);
-    game.getChat().setChatActive(true);
   }
 }
