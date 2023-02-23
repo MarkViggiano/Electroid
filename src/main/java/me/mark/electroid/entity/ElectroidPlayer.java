@@ -11,9 +11,10 @@ import com.megaboost.inputs.MouseClickType;
 import com.megaboost.inventory.HotBar;
 import com.megaboost.inventory.Inventory;
 import com.megaboost.inventory.InventoryHolder;
-import com.megaboost.inventory.types.PlayerInventory;
 import com.megaboost.position.Location;
+import com.megaboost.visuals.Camera;
 import me.mark.electroid.Electroid;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 
@@ -25,7 +26,7 @@ public class ElectroidPlayer extends Player implements ChatSender, Listener, Inv
   public ElectroidPlayer(Location location, String name) {
     super(location, name);
 
-    this.inventory = new PlayerInventory(this);
+    this.inventory = new Inventory("Player Inventory", 9, 5);
     this.hotBar = new HotBar(this.inventory, 60, 60, 5);
     setSpeed(8);
     getNameTag().setShown(false);
@@ -84,4 +85,10 @@ public class ElectroidPlayer extends Player implements ChatSender, Listener, Inv
   public HotBar getHotBar() {
     return hotBar;
   }
+
+  @Override
+  public void render(Graphics g, Camera camera) {
+    return;
+  }
+
 }
