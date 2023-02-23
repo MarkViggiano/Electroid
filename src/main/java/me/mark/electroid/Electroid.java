@@ -1,8 +1,12 @@
 package me.mark.electroid;
 
 import com.megaboost.Game;
-import me.mark.electroid.gui.menus.MainMenu;
+import me.mark.electroid.gui.mainmenu.MainMenu;
 
+/**
+ * Primary Background Color: rgb(57, 50, 49)
+ *
+ */
 public class Electroid {
 
   private final Game game;

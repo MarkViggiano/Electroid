@@ -1,15 +1,20 @@
-package me.mark.electroid.gui.menus;
+package me.mark.electroid.gui.mainmenu;
 
 import com.megaboost.gui.menu.FullScreenMenu;
 import java.awt.Color;
-import java.util.Collections;
+import java.util.Arrays;
 
 public class MainMenu extends FullScreenMenu {
 
   private final Color backgroundColor;
 
   public MainMenu() {
-    super(Collections.emptyList());
+    super(Arrays.asList(
+        new TitleText(),
+        new ResumeButton(),
+        new NewCircuitButton(),
+        new LoadCircuitButton(),
+        new QuitButton()));
 
     this.backgroundColor = new Color(57, 50, 49);
   }
