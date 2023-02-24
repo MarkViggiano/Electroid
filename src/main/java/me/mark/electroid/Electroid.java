@@ -1,8 +1,10 @@
 package me.mark.electroid;
 
 import com.megaboost.Game;
+import com.megaboost.world.WorldObjectPlaceManager;
 import me.mark.electroid.gui.mainmenu.MainMenu;
 import me.mark.electroid.utils.ImageUtil;
+import me.mark.electroid.world.blocks.WireBlock;
 
 /**
  * Primary Background Color: rgb(57, 50, 49)
@@ -30,6 +32,13 @@ public class Electroid {
 
   private void start() {
     getMainMenu().setShown(true);
+    registerWorldObjects();
+  }
+
+  private void registerWorldObjects() {
+    WorldObjectPlaceManager wpm = getGame().getWorldObjectPlaceManager();
+    wpm.addObject(new WireBlock());
+
   }
 
   public Game getGame() {

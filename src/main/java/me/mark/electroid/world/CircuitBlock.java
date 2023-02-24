@@ -1,10 +1,15 @@
 package me.mark.electroid.world;
 
+import com.megaboost.Game;
 import com.megaboost.entity.Entity;
+import com.megaboost.position.Location;
+import com.megaboost.utils.ImageUtil;
+import com.megaboost.utils.MathUtil;
 import com.megaboost.visuals.Camera;
 import com.megaboost.visuals.Filter;
 import com.megaboost.world.Block;
 import com.megaboost.world.Chunk;
+import com.megaboost.world.WorldObject;
 import com.megaboost.world.biome.Biome;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -23,6 +28,21 @@ public class CircuitBlock extends Block {
   @Override
   public void onWalkOn(Entity entity) {
 
+  }
+
+  @Override
+  public void setGameObject(WorldObject gameObject) {
+    if (gameObject == null) {
+      if (getGameObject() != null) {
+        Game.getInstance().getComponentManager().removeComponent(getGameObject());
+        getGameObject().destroy();
+      }
+      overrideGameObject(null);
+      return;
+    }
+
+    gameObject.setLocation(getLocation());
+    overrideGameObject(gameObject);
   }
 
   @Override
