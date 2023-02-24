@@ -12,6 +12,9 @@ public class Electroid {
   private final Game game;
   private final MainMenu mainMenu;
   private static Electroid INSTANCE;
+  public static final String ERROR_PREFIX = "ERROR> ";
+  public static final String SYSTEM_PREFIX = "SYSTEM> ";
+  public static final String WARNING_PREFIX = "WARNING> ";
 
   private Electroid() {
     this.game = new Game("Electroid");

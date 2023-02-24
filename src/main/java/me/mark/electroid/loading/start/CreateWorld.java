@@ -2,15 +2,20 @@ package me.mark.electroid.loading.start;
 
 import com.megaboost.Game;
 import com.megaboost.loading.Task;
-import com.megaboost.world.biome.BiomeManager;
-import me.mark.electroid.world.CircuitBiome;
-
-import java.util.Collections;
+import me.mark.electroid.Electroid;
+import me.mark.electroid.world.ElectroidWorld;
 
 public class CreateWorld implements Task {
   @Override
   public void execute(Game game) {
-    game.createNewGameWorld("CurrentWorld", 4, 4, new BiomeManager(Collections.singletonList(new CircuitBiome())));
+
+    long start = System.currentTimeMillis();
+    ElectroidWorld world = new ElectroidWorld();
+    game.addWorld(world);
+    game.setGameWorld(world);
+    long now = System.currentTimeMillis();
+    game.getChat().sendChatMessage(String.format("%s Generating world took %s ms.", Electroid.SYSTEM_PREFIX, now - start));
+
   }
 
   @Override
