@@ -2,6 +2,7 @@ package me.mark.electroid;
 
 import com.megaboost.Game;
 import me.mark.electroid.gui.mainmenu.MainMenu;
+import me.mark.electroid.utils.ImageUtil;
 
 /**
  * Primary Background Color: rgb(57, 50, 49)
@@ -11,6 +12,7 @@ public class Electroid {
 
   private final Game game;
   private final MainMenu mainMenu;
+  private final ImageUtil componentSheet;
   private static Electroid INSTANCE;
   public static final String ERROR_PREFIX = "ERROR> ";
   public static final String SYSTEM_PREFIX = "SYSTEM> ";
@@ -20,6 +22,7 @@ public class Electroid {
     this.game = new Game("Electroid");
     INSTANCE = this;
 
+    this.componentSheet = new ImageUtil("/components.png", 51, 51);
     this.mainMenu = new MainMenu();
 
     start();
@@ -31,6 +34,10 @@ public class Electroid {
 
   public Game getGame() {
     return game;
+  }
+
+  public ImageUtil getComponentSheet() {
+    return componentSheet;
   }
 
   public MainMenu getMainMenu() {
