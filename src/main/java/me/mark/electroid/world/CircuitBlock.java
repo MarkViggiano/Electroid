@@ -2,9 +2,6 @@ package me.mark.electroid.world;
 
 import com.megaboost.Game;
 import com.megaboost.entity.Entity;
-import com.megaboost.position.Location;
-import com.megaboost.utils.ImageUtil;
-import com.megaboost.utils.MathUtil;
 import com.megaboost.visuals.Camera;
 import com.megaboost.visuals.Filter;
 import com.megaboost.world.Block;

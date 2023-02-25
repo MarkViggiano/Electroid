@@ -4,6 +4,7 @@ import com.megaboost.Game;
 import com.megaboost.world.WorldObjectPlaceManager;
 import me.mark.electroid.gui.mainmenu.MainMenu;
 import me.mark.electroid.utils.ImageUtil;
+import me.mark.electroid.world.blocks.BatteryBlock;
 import me.mark.electroid.world.blocks.WireBlock;
 
 /**
@@ -38,6 +39,7 @@ public class Electroid {
   private void registerWorldObjects() {
     WorldObjectPlaceManager wpm = getGame().getWorldObjectPlaceManager();
     wpm.addObject(new WireBlock());
+    wpm.addObject(new BatteryBlock());
 
   }
 

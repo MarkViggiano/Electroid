@@ -11,26 +11,59 @@ import com.megaboost.inputs.MouseClickType;
 import com.megaboost.inventory.HotBar;
 import com.megaboost.inventory.Inventory;
 import com.megaboost.inventory.InventoryHolder;
+import com.megaboost.items.Material;
 import com.megaboost.position.Location;
+import com.megaboost.utils.ImageUtil;
 import com.megaboost.visuals.Camera;
 import me.mark.electroid.Electroid;
+import me.mark.electroid.gui.debugmenu.DebugMenu;
+
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 
 public class ElectroidPlayer extends Player implements ChatSender, Listener, InventoryHolder {
 
   private final Inventory inventory;
   private final HotBar hotBar;
+  private final DebugMenu debugMenu;
+  private Image cursorImage;
+  private int cursorRotation;
 
   public ElectroidPlayer(Location location, String name) {
     super(location, name);
 
     this.inventory = new Inventory("Player Inventory", 9, 5);
     this.hotBar = new HotBar(this.inventory, 60, 60, 5);
+    this.debugMenu = new DebugMenu(this);
+    this.cursorImage = null;
+    this.cursorRotation = 0;
     setSpeed(8);
     getNameTag().setShown(false);
     Electroid.getInstance().getGame().getEventManager().registerListener(this);
+  }
+
+  public Image getCursorImage() {
+    return cursorImage;
+  }
+
+  public void setCursorImage(Image cursorImage) {
+    this.cursorImage = cursorImage;
+  }
+
+  public int getCursorRotation() {
+    return cursorRotation;
+  }
+
+  public void setCursorRotation(int cursorRotation) {
+    this.cursorRotation = cursorRotation;
+  }
+
+  private void rotateCursorImage() {
+    if (getCursorImage() == null) return;
+    setCursorRotation(getCursorRotation() + 90);
+    setCursorImage(ImageUtil.rotate(getCursorImage(), 90));
   }
 
   @EventHandler
@@ -40,6 +73,7 @@ public class ElectroidPlayer extends Player implements ChatSender, Listener, Inv
 
     if (keycode == KeyEvent.VK_E) getInventory().toggleShown();
     if (keycode == KeyEvent.VK_ESCAPE) if (getInventory().isShown()) getInventory().closeInventory();
+    if (keycode == KeyEvent.VK_SPACE) if (!getInventory().isShown()) rotateCursorImage();
   }
 
   @EventHandler
@@ -87,8 +121,23 @@ public class ElectroidPlayer extends Player implements ChatSender, Listener, Inv
   }
 
   @Override
+  public void tick() {
+    super.tick();
+
+    if (getHotBar() == null) return;
+    if (getHotBar().getItemInHand() == null) return;
+    if (getHotBar().getItemInHand().getType() == Material.AIR) {
+      setCursorImage(null);
+      return;
+    }
+    setCursorImage(ImageUtil.rotate(getHotBar().getItemInHand().getType().getAsset(), getCursorRotation()));
+  }
+
+  @Override
   public void render(Graphics g, Camera camera) {
-    return;
+    if (getCursorImage() == null) return;
+    Point mousePoint = Electroid.getInstance().getGame().getMousePoint();
+    g.drawImage(getCursorImage(), (int) mousePoint.getX(), (int) mousePoint.getY(), 50, 50, null);
   }
 
 }
