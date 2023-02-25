@@ -1,11 +1,14 @@
 package me.mark.electroid.world.blocks;
 
 import com.megaboost.items.ItemStack;
+import com.megaboost.utils.ImageUtil;
 import com.megaboost.world.Block;
 import com.megaboost.world.WorldObject;
 import com.megaboost.world.block.Breakable;
 import com.megaboost.world.block.Placeable;
+import me.mark.electroid.Electroid;
 import me.mark.electroid.electrical.Wire;
+import me.mark.electroid.entity.ElectroidPlayer;
 import me.mark.electroid.items.Material;
 import me.mark.electroid.world.CircuitBlock;
 import java.awt.Color;
@@ -17,7 +20,7 @@ public class WireBlock extends WorldObject implements Breakable, Placeable, Wire
   private final ItemStack drop;
 
   public WireBlock(Block block) {
-    super(Material.STRAIGHT_WIRE.getAsset(), block);
+    super(ImageUtil.rotate(Material.STRAIGHT_WIRE.getAsset(), ((ElectroidPlayer) Electroid.getInstance().getGame().getPlayer()).getCursorRotation()), block);
 
     this.drop = new ItemStack(Material.STRAIGHT_WIRE);
     //Electroid.getInstance().getGame().getWorldObjectPlaceManager().addObject(this);

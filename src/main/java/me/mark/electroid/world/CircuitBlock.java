@@ -53,7 +53,7 @@ public class CircuitBlock extends Block {
 
     for (Filter filter : getFilters()) {
       g.setColor(filter.getColor());
-      g.fillRect(cords[0] - 2, cords[1] - 2, width - 4, height - 4);
+      g.fillRect(cords[0], cords[1], width, height);
     }
   }
 
