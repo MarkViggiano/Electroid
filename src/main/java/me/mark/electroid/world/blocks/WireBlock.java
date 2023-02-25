@@ -18,10 +18,15 @@ import java.util.List;
 public class WireBlock extends WorldObject implements Breakable, Placeable, Wire {
 
   private final ItemStack drop;
+  private double voltage;
+  private double current;
+  private boolean isNode;
+  private int rotation;
 
   public WireBlock(Block block) {
     super(ImageUtil.rotate(Material.STRAIGHT_WIRE.getAsset(), ((ElectroidPlayer) Electroid.getInstance().getGame().getPlayer()).getCursorRotation()), block);
 
+    this.rotation = ((ElectroidPlayer) Electroid.getInstance().getGame().getPlayer()).getCursorRotation();
     this.drop = new ItemStack(Material.STRAIGHT_WIRE);
     //Electroid.getInstance().getGame().getWorldObjectPlaceManager().addObject(this);
     setWidth(50);
@@ -60,42 +65,47 @@ public class WireBlock extends WorldObject implements Breakable, Placeable, Wire
   }
 
   @Override
+  public void setRotation(int rotation) {
+    this.rotation = rotation;
+  }
+
+  @Override
   public int getRotation() {
-    return 0;
+    return rotation;
   }
 
   @Override
   public void setVoltage(double voltage) {
-
+    this.voltage = voltage;
   }
 
   @Override
   public double getVoltage() {
-    return 0;
+    return voltage;
   }
 
   @Override
   public void setCurrent(double current) {
-
+    this.current = current;
   }
 
   @Override
   public double getCurrent() {
-    return 0;
+    return current;
   }
 
   @Override
   public void setResistance(double resistance) {
-
+    //resistance of wire can't change from 0.1 ohms
   }
 
   @Override
   public boolean isNode() {
-    return false;
+    return isNode;
   }
 
   @Override
   public void setNode(boolean isNode) {
-
+    this.isNode = isNode;
   }
 }

@@ -2,6 +2,7 @@ package me.mark.electroid.electrical;
 
 public interface ElectricalComponent {
 
+  void setRotation(int rotation);
   int getRotation();
   void setVoltage(double voltage);
   double getVoltage();
