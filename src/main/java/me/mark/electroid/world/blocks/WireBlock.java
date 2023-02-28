@@ -3,11 +3,14 @@ package me.mark.electroid.world.blocks;
 import com.megaboost.items.ItemStack;
 import com.megaboost.utils.ImageUtil;
 import com.megaboost.world.Block;
+import com.megaboost.world.World;
 import com.megaboost.world.WorldObject;
 import com.megaboost.world.block.Breakable;
 import com.megaboost.world.block.Placeable;
 import me.mark.electroid.Electroid;
+import me.mark.electroid.electrical.ElectricalComponent;
 import me.mark.electroid.electrical.Wire;
+import me.mark.electroid.electrical.wire.WireState;
 import me.mark.electroid.entity.ElectroidPlayer;
 import me.mark.electroid.items.Material;
 import me.mark.electroid.world.CircuitBlock;
@@ -31,6 +34,7 @@ public class WireBlock extends WorldObject implements Breakable, Placeable, Wire
     //Electroid.getInstance().getGame().getWorldObjectPlaceManager().addObject(this);
     setWidth(50);
     setHeight(50);
+    updateComponentState();
   }
 
   public WireBlock() {
@@ -62,6 +66,33 @@ public class WireBlock extends WorldObject implements Breakable, Placeable, Wire
   @Override
   public Material getSourceMaterial() {
     return Material.STRAIGHT_WIRE;
+  }
+
+  @Override
+  public void updateComponentState() {
+    Block block = getBlock();
+    World world = block.getLocation().getWorld();
+    int blockX = block.getBlockX();
+    int blockY = block.getBlockY();
+    int leftVal = 0;
+    int rightVal = 0;
+    int upVal = 0;
+    int downVal = 0;
+
+    Block left = world.getBlockByWorldPosition(blockX - 1, blockY);
+    Block right = world.getBlockByWorldPosition(blockX + 1, blockY);
+    Block up = world.getBlockByWorldPosition(blockX, blockY - 1);
+    Block down = world.getBlockByWorldPosition(blockX, blockY + 1);
+
+    if (left != null) if (left.getGameObject() != null) leftVal = 1;
+    if (right != null) if (right.getGameObject() != null) rightVal = 1;
+    if (up != null) if (up.getGameObject() != null) upVal = 1;
+    if (down != null) if (down.getGameObject() != null) downVal = 1;
+
+    WireState state = processWireState(new int[] {upVal, rightVal, downVal, leftVal});
+    setRotation(state.getRotation());
+    setAsset(ImageUtil.rotate(state.getAsset(), state.getRotation()));
+
   }
 
   @Override
