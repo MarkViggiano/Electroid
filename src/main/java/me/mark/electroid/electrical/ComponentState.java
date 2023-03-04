@@ -1,13 +1,13 @@
-package me.mark.electroid.electrical.wire;
+package me.mark.electroid.electrical;
 
 import java.awt.Image;
 
-public class WireState {
+public class ComponentState {
 
   private final Image asset;
   private final int rotation;
 
-  public WireState(Image asset, int rotation) {
+  public ComponentState(Image asset, int rotation) {
     this.asset = asset;
     this.rotation = rotation;
   }

@@ -1,9 +1,13 @@
 package me.mark.electroid.electrical;
 
-import me.mark.electroid.electrical.wire.WireState;
 import me.mark.electroid.items.Material;
+import java.util.HashMap;
 
 public interface Wire extends ElectricalComponent {
+
+  HashMap<ComponentShape, ComponentState> SHAPE_MAP = new HashMap<>() {{
+    put(new ComponentShape(new int[] {1, 1, 1, 1}), new ComponentState(Material.FOUR_PRONGED_WIRE.getAsset(), 0));
+  }};
 
   @Override
   default double getResistance() {
@@ -17,38 +21,12 @@ public interface Wire extends ElectricalComponent {
    * Process the state a wire is in
    * @param shape | The shape of the wire mesh the wire is connecting to, 1 means object is present, 0 means no object is present.
    */
-  default WireState processWireState(int[] shape) {
-    if (shape.length != 4) throw new Error("Wire shapes should have a length of 4, provided with length: " + shape.length);
+  @Override
+  default ComponentState processComponentState(ComponentShape shape) {
+    if (shape.getBlockMap().length != 4) throw new Error("Wire shapes should have a length of 4, provided with length: " + shape.getBlockMap().length);
 
-    int top = shape[0];
-    int right = shape[1];
-    int down = shape[2];
-    int left = shape[3];
-    int combinedValue = top + right + down + left;
+    return SHAPE_MAP.getOrDefault(shape, new ComponentState(Material.STRAIGHT_WIRE.getAsset(), getRotation()));
 
-    //quick check if it's a node
-    if (combinedValue >= 3) setNode(true);
-
-    //Quad connection
-    if (combinedValue == 4) {
-      System.out.println("FOUR");
-      return new WireState(Material.FOUR_PRONGED_WIRE.getAsset(), 0);
-    }
-    else if (combinedValue == 3) {
-      //todo triple connection
-    }
-    else if (combinedValue == 2) {
-      //todo corner value
-    }
-    else if (combinedValue == 1) return new WireState(Material.STRAIGHT_WIRE.getAsset(), getRotation());
-    //Triple connection
-
-
-    //corner
-
-
-
-    return new WireState(Material.STRAIGHT_WIRE.getAsset(), getRotation());
   }
 
 }

@@ -1,16 +1,17 @@
 package me.mark.electroid.electrical;
 
 import com.megaboost.position.Direction;
+import com.megaboost.position.Location;
+import com.megaboost.utils.ImageUtil;
 import com.megaboost.world.Block;
 import com.megaboost.world.World;
-
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
 
 public interface ElectricalComponent {
 
   Block getBlock();
-  void updateComponentState();
   void setRotation(int rotation);
   int getRotation();
   void setVoltage(double voltage);
@@ -19,7 +20,7 @@ public interface ElectricalComponent {
   double getCurrent();
   void setResistance(double resistance);
   double getResistance();
-
+  void setAsset(Image image);
   default double getPower() {
     return getCurrent() * getVoltage();
   }
@@ -28,6 +29,34 @@ public interface ElectricalComponent {
     double voltage = getCurrent() * getResistance();
     setVoltage(voltage);
     return voltage;
+  }
+
+  ComponentState processComponentState(ComponentShape shape);
+
+  default void updateComponentState() {
+    Block block = getBlock();
+    Location blockLoc = block.getLocation();
+    World world = blockLoc.getWorld();
+    int blockX = blockLoc.getX();
+    int blockY = blockLoc.getY();
+    int leftVal = 0;
+    int rightVal = 0;
+    int upVal = 0;
+    int downVal = 0;
+
+    Block left = world.getBlockByWorldPosition(blockX - 1, blockY);
+    Block right = world.getBlockByWorldPosition(blockX + 1, blockY);
+    Block up = world.getBlockByWorldPosition(blockX, blockY - 1);
+    Block down = world.getBlockByWorldPosition(blockX, blockY + 1);
+
+    if (left != null) if (left.getGameObject() != null) leftVal = 1;
+    if (right != null) if (right.getGameObject() != null) rightVal = 1;
+    if (up != null) if (up.getGameObject() != null) upVal = 1;
+    if (down != null) if (down.getGameObject() != null) downVal = 1;
+
+    ComponentState state = processComponentState(new ComponentShape(new int[] {upVal, rightVal, downVal, leftVal}));
+    setRotation(state.getRotation());
+    setAsset(ImageUtil.rotate(state.getAsset(), state.getRotation()));
   }
 
   default boolean processComponent(Direction from, ElectricalComponent priorComponent) {
