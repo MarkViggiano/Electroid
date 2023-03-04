@@ -29,17 +29,8 @@ public class CircuitBlock extends Block {
 
   @Override
   public void setGameObject(WorldObject gameObject) {
-    if (gameObject == null) {
-      if (getGameObject() != null) {
-        Game.getInstance().getComponentManager().removeComponent(getGameObject());
-        getGameObject().destroy();
-      }
-      overrideGameObject(null);
-      return;
-    }
-
-    gameObject.setLocation(getLocation());
-    overrideGameObject(gameObject);
+    super.setGameObject(gameObject);
+    if (gameObject != null) gameObject.setLocation(getLocation());
   }
 
   @Override

@@ -1,17 +1,13 @@
 package me.mark.electroid.world.blocks;
 
 import com.megaboost.items.ItemStack;
-import com.megaboost.position.Location;
 import com.megaboost.utils.ImageUtil;
 import com.megaboost.world.Block;
-import com.megaboost.world.World;
 import com.megaboost.world.WorldObject;
 import com.megaboost.world.block.Breakable;
 import com.megaboost.world.block.Placeable;
 import me.mark.electroid.Electroid;
-import me.mark.electroid.electrical.ComponentShape;
 import me.mark.electroid.electrical.Wire;
-import me.mark.electroid.electrical.ComponentState;
 import me.mark.electroid.entity.ElectroidPlayer;
 import me.mark.electroid.items.Material;
 import me.mark.electroid.world.CircuitBlock;

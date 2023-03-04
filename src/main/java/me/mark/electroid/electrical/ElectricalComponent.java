@@ -49,11 +49,15 @@ public interface ElectricalComponent {
     Block up = world.getBlockByWorldPosition(blockX, blockY - 1);
     Block down = world.getBlockByWorldPosition(blockX, blockY + 1);
 
-    if (left != null) if (left.getGameObject() != null) leftVal = 1;
-    if (right != null) if (right.getGameObject() != null) rightVal = 1;
-    if (up != null) if (up.getGameObject() != null) upVal = 1;
-    if (down != null) if (down.getGameObject() != null) downVal = 1;
+    if (left != null) if (left.getGameObject() != null && left.getGameObject() instanceof ElectricalComponent) leftVal = 1;
+    if (right != null) if (right.getGameObject() != null && right.getGameObject() instanceof ElectricalComponent) rightVal = 1;
+    if (up != null) if (up.getGameObject() != null && up.getGameObject() instanceof ElectricalComponent) upVal = 1;
+    if (down != null) if (down.getGameObject() != null && down.getGameObject() instanceof ElectricalComponent) downVal = 1;
 
+    System.out.println(upVal);
+    System.out.println(rightVal);
+    System.out.println(downVal);
+    System.out.println(leftVal);
     ComponentState state = processComponentState(new ComponentShape(new int[] {upVal, rightVal, downVal, leftVal}));
     setRotation(state.getRotation());
     setAsset(ImageUtil.rotate(state.getAsset(), state.getRotation()));
