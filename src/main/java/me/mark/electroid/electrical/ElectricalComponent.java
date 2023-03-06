@@ -33,7 +33,7 @@ public interface ElectricalComponent {
 
   ComponentState processComponentState(ComponentShape shape);
 
-  default void updateComponentState() {
+  default void updateComponentState(boolean placed) {
     Block block = getBlock();
     Location blockLoc = block.getLocation();
     World world = blockLoc.getWorld();
@@ -44,20 +44,35 @@ public interface ElectricalComponent {
     int upVal = 0;
     int downVal = 0;
 
-    Block left = world.getBlockByWorldPosition(blockX - 1, blockY);
-    Block right = world.getBlockByWorldPosition(blockX + 1, blockY);
-    Block up = world.getBlockByWorldPosition(blockX, blockY - 1);
-    Block down = world.getBlockByWorldPosition(blockX, blockY + 1);
+    Block left = world.getBlockByWorldPosition(blockX - 50, blockY);
+    Block right = world.getBlockByWorldPosition(blockX + 50, blockY);
+    Block up = world.getBlockByWorldPosition(blockX, blockY - 50);
+    Block down = world.getBlockByWorldPosition(blockX, blockY + 50);
 
-    if (left != null) if (left.getGameObject() != null && left.getGameObject() instanceof ElectricalComponent) leftVal = 1;
-    if (right != null) if (right.getGameObject() != null && right.getGameObject() instanceof ElectricalComponent) rightVal = 1;
-    if (up != null) if (up.getGameObject() != null && up.getGameObject() instanceof ElectricalComponent) upVal = 1;
-    if (down != null) if (down.getGameObject() != null && down.getGameObject() instanceof ElectricalComponent) downVal = 1;
+    if (left != null)
+      if (left.getGameObject() != null && left.getGameObject() instanceof ElectricalComponent) {
+        leftVal = 1;
+        if (placed) ((ElectricalComponent) left.getGameObject()).updateComponentState(false);
+      }
 
-    System.out.println(upVal);
-    System.out.println(rightVal);
-    System.out.println(downVal);
-    System.out.println(leftVal);
+    if (right != null)
+      if (right.getGameObject() != null && right.getGameObject() instanceof ElectricalComponent) {
+        rightVal = 1;
+        if (placed) ((ElectricalComponent) right.getGameObject()).updateComponentState(false);
+      }
+
+    if (up != null)
+      if (up.getGameObject() != null && up.getGameObject() instanceof ElectricalComponent) {
+        upVal = 1;
+        if (placed) ((ElectricalComponent) up.getGameObject()).updateComponentState(false);
+      }
+
+    if (down != null)
+      if (down.getGameObject() != null && down.getGameObject() instanceof ElectricalComponent) {
+        downVal = 1;
+        if (placed) ((ElectricalComponent) down.getGameObject()).updateComponentState(false);
+      }
+
     ComponentState state = processComponentState(new ComponentShape(new int[] {upVal, rightVal, downVal, leftVal}));
     setRotation(state.getRotation());
     setAsset(ImageUtil.rotate(state.getAsset(), state.getRotation()));

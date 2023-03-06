@@ -31,7 +31,7 @@ public class WireBlock extends WorldObject implements Breakable, Placeable, Wire
     //Electroid.getInstance().getGame().getWorldObjectPlaceManager().addObject(this);
     setWidth(50);
     setHeight(50);
-    updateComponentState();
+    updateComponentState(true);
   }
 
   public WireBlock() {

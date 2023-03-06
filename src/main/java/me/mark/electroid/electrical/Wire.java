@@ -7,10 +7,15 @@ public interface Wire extends ElectricalComponent {
 
   HashMap<ComponentShape, ComponentState> SHAPE_MAP = new HashMap<>() {{
     //Straight possibilities
-    put(new ComponentShape(new int[] {1, 0, 0, 0}), new ComponentState(Material.STRAIGHT_WIRE.getAsset(), 90));
-    put(new ComponentShape(new int[] {0, 1, 0, 0}), new ComponentState(Material.STRAIGHT_WIRE.getAsset(), 0));
-    put(new ComponentShape(new int[] {0, 0, 1, 0}), new ComponentState(Material.STRAIGHT_WIRE.getAsset(), 90));
-    put(new ComponentShape(new int[] {0, 0, 0, 1}), new ComponentState(Material.STRAIGHT_WIRE.getAsset(), 0));
+    ComponentState straight_vertical = new ComponentState(Material.STRAIGHT_WIRE.getAsset(), 90);
+    put(new ComponentShape(new int[] {1, 0, 0, 0}), straight_vertical);
+    put(new ComponentShape(new int[] {0, 0, 1, 0}), straight_vertical);
+    put(new ComponentShape(new int[] {1, 0, 1, 0}), straight_vertical);
+
+    ComponentState straight_horizontal = new ComponentState(Material.STRAIGHT_WIRE.getAsset(), 0);
+    put(new ComponentShape(new int[] {0, 1, 0, 0}), straight_horizontal);
+    put(new ComponentShape(new int[] {0, 0, 0, 1}), straight_horizontal);
+    put(new ComponentShape(new int[] {0, 1, 0, 1}), straight_horizontal);
     //curved possibilities
     put(new ComponentShape(new int[] {1, 0, 0, 1}), new ComponentState(Material.CURVED_WIRE.getAsset(), 0));
     put(new ComponentShape(new int[] {1, 1, 0, 0}), new ComponentState(Material.CURVED_WIRE.getAsset(), 90));
