@@ -35,7 +35,6 @@ public class ElectroidChunk extends Chunk {
           Block block = blockType.getConstructor(Integer.TYPE, Integer.TYPE, Chunk.class, Integer.TYPE, Integer.TYPE, Biome.class)
               .newInstance(pixelX, pixelY, this, posX, posY, biome);
 
-          block.setGameObject(null);
           setBlockAt(posX, posY, block);
         } catch (IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
           e.printStackTrace();
