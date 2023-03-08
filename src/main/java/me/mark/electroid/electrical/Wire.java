@@ -32,7 +32,7 @@ public interface Wire extends ElectricalComponent {
 
   @Override
   default double getResistance() {
-    return 0.1;
+    return 0;
   }
 
   boolean isNode();
