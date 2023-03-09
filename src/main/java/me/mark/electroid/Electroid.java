@@ -3,6 +3,7 @@ package me.mark.electroid;
 import com.megaboost.Game;
 import com.megaboost.world.WorldObjectPlaceManager;
 import me.mark.electroid.gui.mainmenu.MainMenu;
+import me.mark.electroid.network.ElectroidServer;
 import me.mark.electroid.utils.ImageUtil;
 import me.mark.electroid.world.blocks.BatteryBlock;
 import me.mark.electroid.world.blocks.WireBlock;
@@ -16,6 +17,7 @@ public class Electroid {
   private final Game game;
   private final MainMenu mainMenu;
   private final ImageUtil componentSheet;
+  private final ElectroidServer server;
   private static Electroid INSTANCE;
   public static final String ERROR_PREFIX = "ERROR> ";
   public static final String SYSTEM_PREFIX = "SYSTEM> ";
@@ -25,6 +27,7 @@ public class Electroid {
     this.game = new Game("Electroid");
     INSTANCE = this;
 
+    this.server = new ElectroidServer();
     this.componentSheet = new ImageUtil("/components.png", 51, 51);
     this.mainMenu = new MainMenu();
 
@@ -41,6 +44,10 @@ public class Electroid {
     wpm.addObject(new WireBlock());
     wpm.addObject(new BatteryBlock());
 
+  }
+
+  public ElectroidServer getServer() {
+    return server;
   }
 
   public Game getGame() {
