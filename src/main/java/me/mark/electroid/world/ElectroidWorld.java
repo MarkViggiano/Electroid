@@ -1,9 +1,17 @@
 package me.mark.electroid.world;
 
+import com.megaboost.Game;
+import com.megaboost.utils.FileUtil;
 import com.megaboost.world.ChunkPosition;
 import com.megaboost.world.World;
 import com.megaboost.world.biome.BiomeManager;
+import java.io.File;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class ElectroidWorld extends World {
 
@@ -39,6 +47,38 @@ public class ElectroidWorld extends World {
     }
 
     setChunks(chunks);
+  }
+
+  public static List<ElectroidWorld> getSavedElectroidWorlds() {
+    List<ElectroidWorld> worlds = new ArrayList<>();
+
+    URL url = Game.class.getProtectionDomain().getCodeSource().getLocation();
+    String jarPath = URLDecoder.decode(url.getFile(), StandardCharsets.UTF_8);
+    jarPath = jarPath.substring(0, jarPath.lastIndexOf('/'));
+    File worldDirectory = new File(jarPath + "\\worlds");
+    if (!worldDirectory.exists()) worldDirectory.mkdirs();
+    if (!worldDirectory.isDirectory()) return worlds;
+    if (worldDirectory.listFiles() == null) return worlds;
+
+    String fileName;
+    for (File worldFolder : worldDirectory.listFiles()) {
+      if (!worldFolder.isDirectory()) continue;
+      if (worldFolder.listFiles() == null) continue;
+      for (File file : worldFolder.listFiles()) {
+        fileName = file.getName();
+        if (!fileName.contains(".mbwf")) continue;
+
+        String worldName = fileName.substring(0, fileName.lastIndexOf('.'));
+        List<String> output = FileUtil.getFileOutput(file);
+
+        ElectroidWorld world = new ElectroidWorld();
+        world.setName(worldName);
+        worlds.add(world);
+      }
+    }
+
+    return worlds;
+
   }
 
 }

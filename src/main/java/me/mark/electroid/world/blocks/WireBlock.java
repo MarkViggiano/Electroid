@@ -28,7 +28,7 @@ public class WireBlock extends WorldObject implements Breakable, Placeable, Wire
 
     this.rotation = ((ElectroidPlayer) Electroid.getInstance().getGame().getPlayer()).getCursorRotation();
     this.drop = new ItemStack(Material.STRAIGHT_WIRE);
-    //Electroid.getInstance().getGame().getWorldObjectPlaceManager().addObject(this);
+
     setWidth(50);
     setHeight(50);
     updateComponentState(true);

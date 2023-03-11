@@ -1,6 +1,5 @@
 package me.mark.electroid.world;
 
-import com.megaboost.Game;
 import com.megaboost.entity.Entity;
 import com.megaboost.visuals.Camera;
 import com.megaboost.visuals.Filter;
