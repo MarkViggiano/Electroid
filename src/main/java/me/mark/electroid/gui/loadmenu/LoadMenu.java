@@ -1,4 +1,4 @@
-package me.mark.electroid.gui.mainmenu;
+package me.mark.electroid.gui.loadmenu;
 
 import com.megaboost.gui.menu.FullScreenMenu;
 import me.mark.electroid.gui.TitleText;
@@ -6,19 +6,21 @@ import me.mark.electroid.gui.TitleText;
 import java.awt.Color;
 import java.util.Arrays;
 
-public class MainMenu extends FullScreenMenu {
+public class LoadMenu extends FullScreenMenu {
 
   private final Color backgroundColor;
 
-  public MainMenu() {
+  public LoadMenu() {
     super(Arrays.asList(
-        new TitleText("Electroid"),
-        new ResumeButton(),
-        new NewCircuitButton(),
-        new LoadCircuitButton(),
-        new QuitButton()));
+        new TitleText("Load Circuit"),
+        new LoadToMainMenuButton()));
 
     this.backgroundColor = new Color(57, 50, 49);
+    createWorldList();
+  }
+
+  private void createWorldList() {
+
   }
 
   @Override

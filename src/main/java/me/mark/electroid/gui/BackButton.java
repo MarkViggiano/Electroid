@@ -1,9 +1,8 @@
 package me.mark.electroid.gui;
 
 import com.megaboost.gui.menu.Menu;
-import com.megaboost.inputs.MouseClickType;
 
-public class BackButton extends ElectroidButton {
+public abstract class BackButton extends ElectroidButton {
 
   private final Menu previousMenu;
 
@@ -17,8 +16,4 @@ public class BackButton extends ElectroidButton {
     return previousMenu;
   }
 
-  @Override
-  public void onClick(MouseClickType mouseClickType) {
-    this.previousMenu.setShown(true);
-  }
 }

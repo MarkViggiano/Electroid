@@ -12,7 +12,9 @@ public class LoadCircuitButton extends ElectroidButton {
 
   @Override
   public void onClick(MouseClickType mouseClickType) {
-
+    Electroid electroid = Electroid.getInstance();
+    electroid.getMainMenu().setShown(false);
+    electroid.getLoadMenu().setShown(true);
   }
 
 }

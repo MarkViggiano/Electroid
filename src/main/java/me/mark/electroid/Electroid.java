@@ -2,6 +2,7 @@ package me.mark.electroid;
 
 import com.megaboost.Game;
 import com.megaboost.world.WorldObjectPlaceManager;
+import me.mark.electroid.gui.loadmenu.LoadMenu;
 import me.mark.electroid.gui.mainmenu.MainMenu;
 import me.mark.electroid.network.ElectroidServer;
 import me.mark.electroid.utils.ImageUtil;
@@ -16,6 +17,7 @@ public class Electroid {
 
   private final Game game;
   private final MainMenu mainMenu;
+  private final LoadMenu loadMenu;
   private final ImageUtil componentSheet;
   private final ElectroidServer server;
   private static Electroid INSTANCE;
@@ -30,6 +32,7 @@ public class Electroid {
     this.server = new ElectroidServer();
     this.componentSheet = new ImageUtil("/components.png", 51, 51);
     this.mainMenu = new MainMenu();
+    this.loadMenu = new LoadMenu();
 
     start();
   }
@@ -60,6 +63,10 @@ public class Electroid {
 
   public MainMenu getMainMenu() {
     return mainMenu;
+  }
+
+  public LoadMenu getLoadMenu() {
+    return loadMenu;
   }
 
   public static Electroid getInstance() {
