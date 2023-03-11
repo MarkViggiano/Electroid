@@ -60,15 +60,13 @@ public class ElectroidWorld extends World {
     if (!worldDirectory.isDirectory()) return worlds;
     if (worldDirectory.listFiles() == null) return worlds;
 
-    String fileName;
     for (File worldFolder : worldDirectory.listFiles()) {
       if (!worldFolder.isDirectory()) continue;
       if (worldFolder.listFiles() == null) continue;
       for (File file : worldFolder.listFiles()) {
-        fileName = file.getName();
-        if (!fileName.contains(".mbwf")) continue;
+        if (!file.getName().contains(".mbwf")) continue;
 
-        String worldName = fileName.substring(0, fileName.lastIndexOf('.'));
+        String worldName = worldFolder.getName();
         List<String> output = FileUtil.getFileOutput(file);
 
         ElectroidWorld world = new ElectroidWorld();

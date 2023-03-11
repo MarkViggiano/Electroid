@@ -62,7 +62,15 @@ public class Electroid {
       System.out.println("[WORLD] Registered world: " + world.getName());
     }
 
+    this.loadMenu.createWorldList();
+  }
 
+  public ElectroidWorld getWorldByName(String name) {
+    return this.worlds.getOrDefault(name, null);
+  }
+
+  public List<ElectroidWorld> getWorlds() {
+    return this.worlds.values().stream().toList();
   }
 
   public ElectroidServer getServer() {
