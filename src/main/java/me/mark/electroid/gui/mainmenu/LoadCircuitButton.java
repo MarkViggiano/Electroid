@@ -2,8 +2,9 @@ package me.mark.electroid.gui.mainmenu;
 
 import com.megaboost.inputs.MouseClickType;
 import me.mark.electroid.Electroid;
+import me.mark.electroid.gui.ElectroidButton;
 
-public class LoadCircuitButton extends MainMenuButton {
+public class LoadCircuitButton extends ElectroidButton {
 
   public LoadCircuitButton() {
     super("Load Circuit", (int) (Electroid.getInstance().getGame().getHeight() * 0.51));

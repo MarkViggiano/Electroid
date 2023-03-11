@@ -1,11 +1,10 @@
-package me.mark.electroid.gui.mainmenu;
+package me.mark.electroid.gui;
 
 import com.megaboost.components.type.Hoverable;
 import com.megaboost.gui.button.Button;
 import com.megaboost.position.Location;
 import com.megaboost.visuals.Camera;
 import me.mark.electroid.Electroid;
-import me.mark.electroid.gui.CenteredComponent;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -13,12 +12,12 @@ import java.awt.Graphics;
 /**
  * color rgb = (124, 21, 7)
  */
-public abstract class MainMenuButton extends Button implements CenteredComponent, Hoverable {
+public abstract class ElectroidButton extends Button implements CenteredComponent, Hoverable {
 
   private boolean hovered;
   private static final int BORDER_WIDTH = 5;
 
-  public MainMenuButton(String text, int yOffset) {
+  public ElectroidButton(String text, int yOffset) {
     super(
         new Location(0, Electroid.getInstance().getGame().getGameHeight() - yOffset),
         300,
