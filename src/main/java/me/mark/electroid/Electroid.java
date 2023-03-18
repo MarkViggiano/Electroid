@@ -5,6 +5,7 @@ import com.megaboost.command.Command;
 import com.megaboost.command.CommandManager;
 import com.megaboost.world.WorldObjectPlaceManager;
 import me.mark.electroid.commands.BatteryCommand;
+import me.mark.electroid.commands.ResistorCommand;
 import me.mark.electroid.gui.loadmenu.LoadMenu;
 import me.mark.electroid.gui.mainmenu.MainMenu;
 import me.mark.electroid.gui.pausemenu.PauseMenu;
@@ -12,6 +13,7 @@ import me.mark.electroid.network.ElectroidServer;
 import me.mark.electroid.utils.ImageUtil;
 import me.mark.electroid.world.ElectroidWorld;
 import me.mark.electroid.world.blocks.BatteryBlock;
+import me.mark.electroid.world.blocks.ResistorBlock;
 import me.mark.electroid.world.blocks.WireBlock;
 import java.util.HashMap;
 import java.util.List;
@@ -62,6 +64,7 @@ public class Electroid {
     WorldObjectPlaceManager wpm = getGame().getWorldObjectPlaceManager();
     wpm.addObject(new WireBlock());
     wpm.addObject(new BatteryBlock());
+    wpm.addObject(new ResistorBlock());
 
   }
 
@@ -78,6 +81,7 @@ public class Electroid {
   private void registerCommands() {
     CommandManager commandManager = getGame().getCommandManager();
     commandManager.addCommand(new Command("battery", "Give yourself a battery!", "/battery <voltage>", new BatteryCommand()));
+    commandManager.addCommand(new Command("resistor", "Give yourself a resistor!", "/resistor <resistance>", new ResistorCommand()));
   }
 
   public Logger getLogger() {

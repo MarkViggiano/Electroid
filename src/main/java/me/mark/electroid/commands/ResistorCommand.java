@@ -8,28 +8,27 @@ import me.mark.electroid.Electroid;
 import me.mark.electroid.entity.ElectroidPlayer;
 import me.mark.electroid.items.Material;
 
-public class BatteryCommand implements CommandExecutor {
+public class ResistorCommand implements CommandExecutor {
   @Override
   public boolean execute(ChatSender chatSender, String[] strings) {
-
     if (!(chatSender instanceof ElectroidPlayer electroidPlayer)) return false;
     if (strings.length != 1) {
-      chatSender.sendMessage("Invalid arguments! Example: /battery 100");
+      chatSender.sendMessage("Invalid arguments! Example: /resistor 100");
       return false;
     }
 
-    int voltage = 100;
+    int resistance = 10;
 
     try {
-      voltage = Integer.parseInt(strings[0]);
+      resistance = Integer.parseInt(strings[0]);
     } catch (NumberFormatException e) {
-      chatSender.sendMessage(Electroid.ERROR_PREFIX + "Invalid voltage number, defaulting to 100.");
+      chatSender.sendMessage(Electroid.ERROR_PREFIX + "Invalid resistance number, defaulting to 10.");
     }
 
-    ItemStack battery = new ItemStack(Material.VOLTAGE_SOURCE, 1);
-    battery.setProperty("voltage", new MetaDataValue<>(voltage));
-    electroidPlayer.getInventory().addItem(battery);
-    chatSender.sendMessage("Given battery with a charge of: " + voltage);
+    ItemStack resistor = new ItemStack(Material.RESISTOR, 1);
+    resistor.setProperty("resistance", new MetaDataValue<>(resistance));
+    electroidPlayer.getInventory().addItem(resistor);
+    chatSender.sendMessage("Given resistor with a resistance of: " + resistance);
     return true;
   }
 }
