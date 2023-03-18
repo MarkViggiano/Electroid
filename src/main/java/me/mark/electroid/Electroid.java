@@ -1,7 +1,10 @@
 package me.mark.electroid;
 
 import com.megaboost.Game;
+import com.megaboost.command.Command;
+import com.megaboost.command.CommandManager;
 import com.megaboost.world.WorldObjectPlaceManager;
+import me.mark.electroid.commands.BatteryCommand;
 import me.mark.electroid.gui.loadmenu.LoadMenu;
 import me.mark.electroid.gui.mainmenu.MainMenu;
 import me.mark.electroid.gui.pausemenu.PauseMenu;
@@ -52,6 +55,7 @@ public class Electroid {
     getMainMenu().setShown(true);
     registerWorldObjects();
     registerSavedWorlds();
+    registerCommands();
   }
 
   private void registerWorldObjects() {
@@ -69,6 +73,11 @@ public class Electroid {
     }
 
     this.loadMenu.createWorldList();
+  }
+
+  private void registerCommands() {
+    CommandManager commandManager = getGame().getCommandManager();
+    commandManager.addCommand(new Command("battery", "Give yourself a battery!", "/battery <voltage>", new BatteryCommand()));
   }
 
   public Logger getLogger() {

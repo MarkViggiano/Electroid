@@ -17,9 +17,7 @@ public class CreatePlayer implements Task {
     ElectroidPlayer player = new ElectroidPlayer(loc, "Player");
     player.spawn();
     game.setPlayer(player);
-    player.getInventory().addItem(new ItemStack(Material.STRAIGHT_WIRE, Integer.MAX_VALUE));
-    player.getInventory().addItem(new ItemStack(Material.VOLTAGE_SOURCE, 10));
-    player.getInventory().addItem(new ItemStack(Material.RESISTOR, 10));
+    player.getInventory().addItem(new ItemStack(Material.STRAIGHT_WIRE, 100));
   }
 
   @Override

@@ -35,9 +35,6 @@ public interface Wire extends ElectricalComponent {
     return 0;
   }
 
-  boolean isNode();
-  void setNode(boolean isNode);
-
   /**
    * Process the state a wire is in
    * @param shape | The shape of the wire mesh the wire is connecting to, 1 means object is present, 0 means no object is present.

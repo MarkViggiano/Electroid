@@ -11,6 +11,8 @@ import java.util.List;
 
 public interface ElectricalComponent {
 
+  boolean isNode();
+  void setNode(boolean isNode);
   Block getBlock();
   void setRotation(int rotation);
   int getRotation();
