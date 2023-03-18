@@ -108,11 +108,16 @@ public interface ElectricalComponent {
       if (yPrior == 1) down = 0;
 
       Block rightBlock = world.getBlockByWorldPosition(blockX + (50 * right), blockY);
+      if (rightBlock != block) ((ElectricalComponent) rightBlock.getGameObject()).processComponent(-1, 0, this, new CircuitPath(this));
+
       Block leftBlock = world.getBlockByWorldPosition(blockX - (50 * left), blockY);
+      if (leftBlock != block) ((ElectricalComponent) leftBlock.getGameObject()).processComponent(1, 0, this, new CircuitPath(this));
+
       Block upBlock = world.getBlockByWorldPosition(blockX, blockY - (50 * up));
+      if (upBlock != block) ((ElectricalComponent) upBlock.getGameObject()).processComponent(0, -1, this, new CircuitPath(this));
+
       Block downBlock = world.getBlockByWorldPosition(blockX, blockY + (50 * down));
-
-
+      if (downBlock != block) ((ElectricalComponent) downBlock.getGameObject()).processComponent(0, 1, this, new CircuitPath(this));
 
       return;
     }
