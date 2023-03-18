@@ -1,6 +1,5 @@
 package me.mark.electroid.world.blocks;
 
-import com.megaboost.inventory.InventoryHolder;
 import com.megaboost.items.ItemStack;
 import com.megaboost.utils.ImageUtil;
 import com.megaboost.world.Block;
@@ -8,6 +7,7 @@ import com.megaboost.world.WorldObject;
 import com.megaboost.world.block.Breakable;
 import com.megaboost.world.block.Placeable;
 import me.mark.electroid.Electroid;
+import me.mark.electroid.electrical.ComponentShape;
 import me.mark.electroid.electrical.VoltageSource;
 import me.mark.electroid.entity.ElectroidPlayer;
 import me.mark.electroid.items.Material;
@@ -22,6 +22,7 @@ public class BatteryBlock extends WorldObject implements Breakable, Placeable, V
   private final ItemStack drop;
   private double voltage;
   private int rotation;
+  private ComponentShape shape;
 
   public BatteryBlock(Block block) {
     super(ImageUtil.rotate(Material.VOLTAGE_SOURCE.getAsset(), ((ElectroidPlayer) Electroid.getInstance().getGame().getPlayer()).getCursorRotation()), block);
@@ -88,6 +89,16 @@ public class BatteryBlock extends WorldObject implements Breakable, Placeable, V
   @Override
   public double getVoltage() {
     return voltage;
+  }
+
+  @Override
+  public void setComponentShape(ComponentShape shape) {
+    this.shape = shape;
+  }
+
+  @Override
+  public ComponentShape getComponentShape() {
+    return shape;
   }
 
 }

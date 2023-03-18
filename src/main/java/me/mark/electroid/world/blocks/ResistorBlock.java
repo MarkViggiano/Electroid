@@ -7,6 +7,7 @@ import com.megaboost.world.WorldObject;
 import com.megaboost.world.block.Breakable;
 import com.megaboost.world.block.Placeable;
 import me.mark.electroid.Electroid;
+import me.mark.electroid.electrical.ComponentShape;
 import me.mark.electroid.electrical.Resistor;
 import me.mark.electroid.entity.ElectroidPlayer;
 import me.mark.electroid.items.Material;
@@ -23,6 +24,7 @@ public class ResistorBlock extends WorldObject implements Placeable, Breakable, 
   private double resistance;
   private double current;
   private double voltage;
+  private ComponentShape shape;
 
   public ResistorBlock(Block block) {
     super(ImageUtil.rotate(Material.RESISTOR.getAsset(), ((ElectroidPlayer) Electroid.getInstance().getGame().getPlayer()).getCursorRotation()), block);
@@ -113,4 +115,15 @@ public class ResistorBlock extends WorldObject implements Placeable, Breakable, 
   public double getResistance() {
     return resistance;
   }
+
+  @Override
+  public void setComponentShape(ComponentShape shape) {
+    this.shape = shape;
+  }
+
+  @Override
+  public ComponentShape getComponentShape() {
+    return shape;
+  }
+
 }

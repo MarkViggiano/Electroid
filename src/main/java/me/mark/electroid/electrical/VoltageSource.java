@@ -51,6 +51,7 @@ public interface VoltageSource extends ElectricalComponent {
     int mapSize = shape.getBlockMap().length;
     if (mapSize != 4) throw new Error("Wire shapes should have a length of 4, provided with length: " + mapSize);
 
+    setComponentShape(shape);
     return new ComponentState(Material.VOLTAGE_SOURCE.getAsset(), getRotation());
   }
 

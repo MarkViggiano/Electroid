@@ -7,6 +7,7 @@ import com.megaboost.world.WorldObject;
 import com.megaboost.world.block.Breakable;
 import com.megaboost.world.block.Placeable;
 import me.mark.electroid.Electroid;
+import me.mark.electroid.electrical.ComponentShape;
 import me.mark.electroid.electrical.Wire;
 import me.mark.electroid.entity.ElectroidPlayer;
 import me.mark.electroid.items.Material;
@@ -22,6 +23,7 @@ public class WireBlock extends WorldObject implements Breakable, Placeable, Wire
   private double current;
   private boolean isNode;
   private int rotation;
+  private ComponentShape shape;
 
   public WireBlock(Block block) {
     super(ImageUtil.rotate(Material.STRAIGHT_WIRE.getAsset(), ((ElectroidPlayer) Electroid.getInstance().getGame().getPlayer()).getCursorRotation()), block);
@@ -109,4 +111,15 @@ public class WireBlock extends WorldObject implements Breakable, Placeable, Wire
   public void setNode(boolean isNode) {
     this.isNode = isNode;
   }
+
+  @Override
+  public void setComponentShape(ComponentShape shape) {
+    this.shape = shape;
+  }
+
+  @Override
+  public ComponentShape getComponentShape() {
+    return shape;
+  }
+
 }

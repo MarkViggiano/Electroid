@@ -46,6 +46,7 @@ public interface Wire extends ElectricalComponent {
     if (mapSize != 4) throw new Error("Wire shapes should have a length of 4, provided with length: " + mapSize);
     if (blockMap[0] + blockMap[1] + blockMap[2] + blockMap[3] >= 3) setNode(true);
 
+    setComponentShape(shape);
     return SHAPE_MAP.getOrDefault(shape, new ComponentState(Material.STRAIGHT_WIRE.getAsset(), getRotation()));
 
   }
