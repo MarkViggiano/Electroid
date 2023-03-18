@@ -11,7 +11,7 @@ public class CreateWorld implements Task {
 
     long start = System.currentTimeMillis();
     ElectroidWorld world = new ElectroidWorld();
-    game.addWorld(world);
+    //game.addWorld(world);
     game.setGameWorld(world);
     long now = System.currentTimeMillis();
     game.getChat().sendChatMessage(String.format("%s Generating world took %s ms.", Electroid.SYSTEM_PREFIX, now - start));
