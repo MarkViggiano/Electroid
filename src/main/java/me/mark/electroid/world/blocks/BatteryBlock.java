@@ -30,13 +30,14 @@ public class BatteryBlock extends WorldObject implements Breakable, Placeable, V
     setWidth(50);
     setHeight(50);
     this.drop = new ItemStack(Material.VOLTAGE_SOURCE);
-    ElectroidPlayer player = (ElectroidPlayer) Electroid.getInstance().getGame().getPlayer();
+    Electroid electroid = Electroid.getInstance();
+    ElectroidPlayer player = (ElectroidPlayer) electroid.getGame().getPlayer();
     this.rotation = player.getCursorRotation();
     String savedVoltage = player.getHotBar().getItemInHand().getProperty("voltage").getSaveData();
     if (Objects.equals(savedVoltage, "")) this.voltage = 100; //default to 100 volts
     else this.voltage = Integer.parseInt(savedVoltage);
-    Electroid.getInstance().getLogger().info(String.format("[SIMULATION] Registered voltage source: %s", this.voltage));
-
+    electroid.getLogger().info(String.format("[SIMULATION] Registered voltage source: %s", this.voltage));
+    electroid.getSimulationManager().setVoltageSource(this);
     updateComponentState(true);
   }
 
@@ -100,5 +101,12 @@ public class BatteryBlock extends WorldObject implements Breakable, Placeable, V
   public ComponentShape getComponentShape() {
     return shape;
   }
+
+  @Override
+  public void destroy() {
+    Electroid.getInstance().getSimulationManager().setVoltageSource(null);
+    super.destroy();
+  }
+
 
 }

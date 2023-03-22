@@ -6,10 +6,12 @@ import com.megaboost.command.CommandManager;
 import com.megaboost.world.WorldObjectPlaceManager;
 import me.mark.electroid.commands.BatteryCommand;
 import me.mark.electroid.commands.ResistorCommand;
+import me.mark.electroid.commands.RoomCommand;
 import me.mark.electroid.gui.loadmenu.LoadMenu;
 import me.mark.electroid.gui.mainmenu.MainMenu;
 import me.mark.electroid.gui.pausemenu.PauseMenu;
 import me.mark.electroid.network.ElectroidServer;
+import me.mark.electroid.simulation.SimulationManager;
 import me.mark.electroid.utils.ImageUtil;
 import me.mark.electroid.world.ElectroidWorld;
 import me.mark.electroid.world.blocks.BatteryBlock;
@@ -32,6 +34,7 @@ public class Electroid {
   private final ImageUtil componentSheet;
   private final ElectroidServer server;
   private final Logger logger;
+  private final SimulationManager simulationManager;
   private final HashMap<String, ElectroidWorld> worlds;
   private static Electroid INSTANCE;
   public static final String ERROR_PREFIX = "ERROR> ";
@@ -42,6 +45,7 @@ public class Electroid {
     this.game = new Game("Electroid");
     INSTANCE = this;
 
+    this.simulationManager = new SimulationManager(this);
     this.logger = Logger.getLogger("Electroid");
     this.worlds = new HashMap<>();
     this.server = new ElectroidServer();
@@ -82,10 +86,15 @@ public class Electroid {
     CommandManager commandManager = getGame().getCommandManager();
     commandManager.addCommand(new Command("battery", "Give yourself a battery!", "/battery <voltage>", new BatteryCommand()));
     commandManager.addCommand(new Command("resistor", "Give yourself a resistor!", "/resistor <resistance>", new ResistorCommand()));
+    commandManager.addCommand(new Command("room", "Interact with a room", "/room", new RoomCommand()));
   }
 
   public Logger getLogger() {
     return logger;
+  }
+
+  public SimulationManager getSimulationManager() {
+    return simulationManager;
   }
 
   public ElectroidWorld getWorldByName(String name) {

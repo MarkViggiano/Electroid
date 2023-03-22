@@ -1,5 +1,6 @@
 package me.mark.electroid.simulation;
 
+import me.mark.electroid.Electroid;
 import me.mark.electroid.electrical.ElectricalComponent;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,8 @@ public class CircuitPath {
   public CircuitPath(ElectricalComponent startNode) {
     this.startNode = startNode;
     this.components = new ArrayList<>();
+
+    Electroid.getInstance().getSimulationManager().addCircuitPath(this);
   }
 
   public ElectricalComponent getStartNode() {
