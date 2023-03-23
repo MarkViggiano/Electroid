@@ -11,6 +11,7 @@ import me.mark.electroid.electrical.ComponentShape;
 import me.mark.electroid.electrical.Wire;
 import me.mark.electroid.entity.ElectroidPlayer;
 import me.mark.electroid.items.Material;
+import me.mark.electroid.simulation.CircuitPath;
 import me.mark.electroid.world.CircuitBlock;
 import java.awt.Color;
 import java.util.Collections;
@@ -24,12 +25,14 @@ public class WireBlock extends WorldObject implements Breakable, Placeable, Wire
   private boolean isNode;
   private int rotation;
   private ComponentShape shape;
+  private CircuitPath path;
 
   public WireBlock(Block block) {
     super(ImageUtil.rotate(Material.STRAIGHT_WIRE.getAsset(), ((ElectroidPlayer) Electroid.getInstance().getGame().getPlayer()).getCursorRotation()), block);
 
     this.rotation = ((ElectroidPlayer) Electroid.getInstance().getGame().getPlayer()).getCursorRotation();
     this.drop = new ItemStack(Material.STRAIGHT_WIRE);
+    this.path = null;
 
     setWidth(50);
     setHeight(50);
@@ -100,6 +103,16 @@ public class WireBlock extends WorldObject implements Breakable, Placeable, Wire
   @Override
   public void setResistance(double resistance) {
     //resistance of wire can't change from 0.1 ohms
+  }
+
+  @Override
+  public CircuitPath getPath() {
+    return path;
+  }
+
+  @Override
+  public void setPath(CircuitPath path) {
+    this.path = path;
   }
 
   @Override

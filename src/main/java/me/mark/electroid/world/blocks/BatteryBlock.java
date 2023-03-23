@@ -11,6 +11,7 @@ import me.mark.electroid.electrical.ComponentShape;
 import me.mark.electroid.electrical.VoltageSource;
 import me.mark.electroid.entity.ElectroidPlayer;
 import me.mark.electroid.items.Material;
+import me.mark.electroid.simulation.CircuitPath;
 import me.mark.electroid.world.CircuitBlock;
 import java.awt.Color;
 import java.util.Collections;
@@ -23,6 +24,7 @@ public class BatteryBlock extends WorldObject implements Breakable, Placeable, V
   private double voltage;
   private int rotation;
   private ComponentShape shape;
+  private CircuitPath path;
 
   public BatteryBlock(Block block) {
     super(ImageUtil.rotate(Material.VOLTAGE_SOURCE.getAsset(), ((ElectroidPlayer) Electroid.getInstance().getGame().getPlayer()).getCursorRotation()), block);
@@ -30,6 +32,7 @@ public class BatteryBlock extends WorldObject implements Breakable, Placeable, V
     setWidth(50);
     setHeight(50);
     this.drop = new ItemStack(Material.VOLTAGE_SOURCE);
+    this.path = null;
     Electroid electroid = Electroid.getInstance();
     ElectroidPlayer player = (ElectroidPlayer) electroid.getGame().getPlayer();
     this.rotation = player.getCursorRotation();
@@ -70,6 +73,16 @@ public class BatteryBlock extends WorldObject implements Breakable, Placeable, V
   @Override
   public Material getSourceMaterial() {
     return Material.VOLTAGE_SOURCE;
+  }
+
+  @Override
+  public CircuitPath getPath() {
+    return path;
+  }
+
+  @Override
+  public void setPath(CircuitPath path) {
+    this.path = path;
   }
 
   @Override

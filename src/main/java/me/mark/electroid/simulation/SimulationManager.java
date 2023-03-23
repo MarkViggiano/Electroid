@@ -7,6 +7,7 @@ import com.megaboost.world.World;
 import me.mark.electroid.Electroid;
 import me.mark.electroid.electrical.ElectricalComponent;
 import me.mark.electroid.electrical.VoltageSource;
+import me.mark.electroid.visual.CircuitFilter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -68,9 +69,19 @@ public class SimulationManager {
       return;
     }
 
-    ((ElectricalComponent) block.getGameObject()).processComponent(-xMod, -yMod, voltageSource.getBlock(), new CircuitPath(getVoltageSource()));
-    System.out.println("SIMULATION SUCCESSFUL");
+    long start = System.currentTimeMillis();
+    ((ElectricalComponent) block.getGameObject()).processComponent(-xMod, -yMod, voltageSource.getBlock(), new CircuitPath(voltageSource));
+    System.out.println("SIMULATION SUCCESSFULLY COMPLETED IN: " + (System.currentTimeMillis() - start) + "ms");
     System.out.println("CREATED: " + getCircuitPaths().size() + " Paths");
+    for (List<CircuitPath> nodePaths : getCircuitPaths()) {
+      for (CircuitPath path : nodePaths) {
+        CircuitFilter filter = new CircuitFilter();
+        for (ElectricalComponent component : path.getComponents()) {
+          component.getBlock().addFilter(filter);
+          component.resetComponent();
+        }
+      }
+    }
   }
 
   public void stopSimulation(String error) {
@@ -83,6 +94,10 @@ public class SimulationManager {
     List<CircuitPath> circuitPaths = this.circuitPaths.getOrDefault(path.getStartNode(), new ArrayList<>());
     circuitPaths.add(path);
     this.circuitPaths.put(path.getStartNode(), circuitPaths);
+  }
+
+  public HashMap<ElectricalComponent, List<CircuitPath>> getCircuitMap() {
+    return circuitPaths;
   }
 
   public List<CircuitPath> getNodePaths(ElectricalComponent component) {

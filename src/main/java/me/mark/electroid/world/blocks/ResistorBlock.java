@@ -11,6 +11,7 @@ import me.mark.electroid.electrical.ComponentShape;
 import me.mark.electroid.electrical.Resistor;
 import me.mark.electroid.entity.ElectroidPlayer;
 import me.mark.electroid.items.Material;
+import me.mark.electroid.simulation.CircuitPath;
 import me.mark.electroid.world.CircuitBlock;
 import java.awt.Color;
 import java.util.Collections;
@@ -25,6 +26,7 @@ public class ResistorBlock extends WorldObject implements Placeable, Breakable, 
   private double current;
   private double voltage;
   private ComponentShape shape;
+  private CircuitPath path;
 
   public ResistorBlock(Block block) {
     super(ImageUtil.rotate(Material.RESISTOR.getAsset(), ((ElectroidPlayer) Electroid.getInstance().getGame().getPlayer()).getCursorRotation()), block);
@@ -34,6 +36,7 @@ public class ResistorBlock extends WorldObject implements Placeable, Breakable, 
     this.voltage = 0;
     this.current = 0;
     this.drop = new ItemStack(Material.RESISTOR);
+    this.path = path;
     ElectroidPlayer player = (ElectroidPlayer) Electroid.getInstance().getGame().getPlayer();
     this.rotation = player.getCursorRotation();
     String savedResistance = player.getHotBar().getItemInHand().getProperty("resistance").getSaveData();
@@ -74,6 +77,16 @@ public class ResistorBlock extends WorldObject implements Placeable, Breakable, 
   @Override
   public Material getSourceMaterial() {
     return Material.RESISTOR;
+  }
+
+  @Override
+  public CircuitPath getPath() {
+    return path;
+  }
+
+  @Override
+  public void setPath(CircuitPath path) {
+    this.path = path;
   }
 
   @Override

@@ -7,11 +7,14 @@ import com.megaboost.world.Block;
 import com.megaboost.world.World;
 import me.mark.electroid.Electroid;
 import me.mark.electroid.simulation.CircuitPath;
-
+import me.mark.electroid.simulation.SimulationManager;
+import java.awt.Color;
 import java.awt.Image;
 
 public interface ElectricalComponent {
 
+  CircuitPath getPath();
+  void setPath(CircuitPath path);
   boolean isNode();
   void setNode(boolean isNode);
   Block getBlock();
@@ -26,9 +29,14 @@ public interface ElectricalComponent {
   void setAsset(Image image);
   void setComponentShape(ComponentShape shape);
   ComponentShape getComponentShape();
-
-
   ComponentState processComponentState(ComponentShape shape);
+
+  /**
+   * Just a more clear way of telling the user what is going on. Use this at the end of the circuit simulation
+   */
+  default void resetComponent() {
+    setPath(null);
+  }
 
   default void updateComponentState(boolean updateNeighbors) {
     Block block = getBlock();
@@ -78,6 +86,7 @@ public interface ElectricalComponent {
   default void processComponent(int xPrior, int yPrior, Block priorBlock, CircuitPath path) {
     Block block = getBlock();
     if (block == null) return;
+    block.clearFilters();
     Location location = block.getLocation();
     int blockX = location.getX();
     int blockY = location.getY();
@@ -88,46 +97,47 @@ public interface ElectricalComponent {
     int down = shape[2];
     int left = shape[3];
 
+    if (getPath() != null) return;
+    SimulationManager simulationManager = Electroid.getInstance().getSimulationManager();
     if (!isNode()) {
       int nextBlockX = blockX + (-(-right + left + xPrior) * 50);
       int nextBlockY = blockY - ((up - down + yPrior) * 50);
       Block nextBlock = world.getBlockByWorldPosition(nextBlockX, nextBlockY);
-      nextBlock.addFilter(Filter.OFF_FOCUS);
       //The shape of the block tells us we KNOW the block is not null and has an electrical component
       path.addComponent(this);
-      getBlock().addFilter(Filter.SELECTED_FILTER);
       if (nextBlock.getGameObject() == null) {
-        Electroid.getInstance().getSimulationManager().stopSimulation("Incomplete circuit!");
+        simulationManager.stopSimulation("Incomplete circuit!");
         return;
       }
-      ((ElectricalComponent) nextBlock.getGameObject()).processComponent(-right + left + xPrior, up - down + yPrior, getBlock(), path);
+      ((ElectricalComponent) nextBlock.getGameObject()).processComponent(-right + left + xPrior, up - down + yPrior, block, path);
       return;
     }
     //set end node in path
     //new paths from node in new directions
+    block.addFilter(new Filter(Color.WHITE));
     path.setEndNode(this);
+    simulationManager.addCircuitPath(path);
     if (this instanceof VoltageSource) return;
 
-    Block rightBlock = world.getBlockByWorldPosition(blockX + (50 * right), blockY);
-    if (rightBlock != block && rightBlock != priorBlock)
-      if (rightBlock.getGameObject() != null)
-        ((ElectricalComponent) rightBlock.getGameObject()).processComponent(-1, 0, getBlock(), new CircuitPath(this));
-
-    Block leftBlock = world.getBlockByWorldPosition(blockX - (50 * left), blockY);
-    if (leftBlock != block)
-      if (leftBlock.getGameObject() != null)
-        ((ElectricalComponent) leftBlock.getGameObject()).processComponent(1, 0, getBlock(), new CircuitPath(this));
-
-    Block upBlock = world.getBlockByWorldPosition(blockX, blockY - (50 * up));
-    if (upBlock != block)
+    Block upBlock = world.getBlockByWorldPosition(blockX, blockY - 50);
+    if (upBlock != priorBlock)
       if (upBlock.getGameObject() != null)
-        ((ElectricalComponent) upBlock.getGameObject()).processComponent(0, -1, getBlock(), new CircuitPath(this));
+        ((ElectricalComponent) upBlock.getGameObject()).processComponent(0, 1, block, new CircuitPath(this));
 
-    Block downBlock = world.getBlockByWorldPosition(blockX, blockY + (50 * down));
-    if (downBlock != block)
+    Block rightBlock = world.getBlockByWorldPosition(blockX + 50, blockY);
+    if (rightBlock != priorBlock)
+      if (rightBlock.getGameObject() != null)
+        ((ElectricalComponent) rightBlock.getGameObject()).processComponent(-1, 0, block, new CircuitPath(this));
+
+    Block downBlock = world.getBlockByWorldPosition(blockX, blockY + 50);
+    if (downBlock != priorBlock)
       if (downBlock.getGameObject() != null)
-        ((ElectricalComponent) downBlock.getGameObject()).processComponent(0, 1, getBlock(), new CircuitPath(this));
+        ((ElectricalComponent) downBlock.getGameObject()).processComponent(0, -1, block, new CircuitPath(this));
 
+    Block leftBlock = world.getBlockByWorldPosition(blockX - 50, blockY);
+    if (leftBlock != priorBlock)
+      if (leftBlock.getGameObject() != null)
+        ((ElectricalComponent) leftBlock.getGameObject()).processComponent(1, 0, block, new CircuitPath(this));
 
   }
 

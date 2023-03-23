@@ -135,6 +135,7 @@ public class ElectroidPlayer extends Player implements ChatSender, Listener, Inv
 
   @Override
   public void render(Graphics g, Camera camera) {
+    super.render(g, camera);
     if (getCursorImage() == null) return;
     Point mousePoint = Electroid.getInstance().getGame().getMousePoint();
     g.drawImage(getCursorImage(), (int) mousePoint.getX(), (int) mousePoint.getY(), 50, 50, null);
