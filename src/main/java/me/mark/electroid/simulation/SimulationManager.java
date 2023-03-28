@@ -34,6 +34,17 @@ public class SimulationManager {
   }
 
   public void simulateCircuit() {
+
+    for (List<CircuitPath> nodePaths : getCircuitPaths()) {
+      for (CircuitPath path : nodePaths) {
+        for (ElectricalComponent component : path.getComponents()) {
+          component.getBlock().clearFilters();
+        }
+      }
+    }
+    this.circuitPaths.clear();
+    this.shortestPath.clear();
+
     ElectricalComponent voltageSource = getVoltageSource();
     if (voltageSource == null) {
       stopSimulation("Missing Voltage Source!");
