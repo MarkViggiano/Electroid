@@ -1,12 +1,15 @@
 package me.mark.electroid.simulation;
 
-import com.megaboost.chat.ChatSender;
 import com.megaboost.position.Location;
 import com.megaboost.world.Block;
 import com.megaboost.world.World;
 import me.mark.electroid.Electroid;
 import me.mark.electroid.electrical.ElectricalComponent;
 import me.mark.electroid.electrical.VoltageSource;
+import me.mark.electroid.electrical.circuit.CircuitPath;
+import me.mark.electroid.electrical.circuit.CircuitPathConnection;
+import me.mark.electroid.electrical.circuit.CircuitType;
+import me.mark.electroid.entity.ElectroidPlayer;
 import me.mark.electroid.visual.CircuitFilter;
 
 import java.util.ArrayList;
@@ -18,13 +21,16 @@ public class SimulationManager {
 
   private final Electroid electroid;
   private final List<ElectricalComponent> shortestPath;
+  //private final HashMap<CircuitPathConnection, List<CircuitPath>> circuitNodeConnections;
   private final HashMap<ElectricalComponent, List<CircuitPath>> circuitPaths;
+  private CircuitType type;
   private SimulationStatus status;
   private VoltageSource voltageSource;
 
   public SimulationManager(Electroid electroid) {
     this.electroid = electroid;
     this.shortestPath = new ArrayList<>();
+    //this.circuitNodeConnections = new HashMap<>();
     this.circuitPaths = new HashMap<>();
     this.status = SimulationStatus.STOPPED;
   }
@@ -43,6 +49,7 @@ public class SimulationManager {
       }
     }
     this.circuitPaths.clear();
+    //this.circuitNodeConnections.clear();
     this.shortestPath.clear();
 
     ElectricalComponent voltageSource = getVoltageSource();
@@ -93,18 +100,31 @@ public class SimulationManager {
         }
       }
     }
+
+    //optimize circuit
+    //determine circuit type
+    if (getCircuitPaths().size() == 1) setCircuitType(CircuitType.SERIES);
+
+    //calculate values
+
   }
 
   public void stopSimulation(String error) {
     resetShortestPath();
     setStatus(SimulationStatus.STOPPED);
-    ((ChatSender)getElectroid().getGame().getPlayer()).sendMessage(Electroid.ERROR_PREFIX + error);
+    ElectroidPlayer player = (ElectroidPlayer) getElectroid().getGame().getPlayer();
+    player.sendMessage(Electroid.ERROR_PREFIX + error);
+    if (getVoltageSource() == null) return;
+    player.teleport(getVoltageSource().getBlock().getLocation());
   }
 
   public void addCircuitPath(CircuitPath path) {
     List<CircuitPath> circuitPaths = this.circuitPaths.getOrDefault(path.getStartNode(), new ArrayList<>());
     circuitPaths.add(path);
     this.circuitPaths.put(path.getStartNode(), circuitPaths);
+
+    //circuitPaths = this.circuitNodeConnections.getOrDefault(path.getCircuitPathConnection(), new ArrayList<>());
+    //this.circuitNodeConnections.put(path.getCircuitPathConnection(), circuitPaths);
   }
 
   public HashMap<ElectricalComponent, List<CircuitPath>> getCircuitMap() {
@@ -133,6 +153,14 @@ public class SimulationManager {
 
   public void setStatus(SimulationStatus status) {
     this.status = status;
+  }
+
+  public CircuitType getCircuitType() {
+    return type;
+  }
+
+  public void setCircuitType(CircuitType type) {
+    this.type = type;
   }
 
   public void setVoltageSource(VoltageSource voltageSource) {

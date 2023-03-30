@@ -1,4 +1,4 @@
-package me.mark.electroid.simulation;
+package me.mark.electroid.electrical.circuit;
 
 import me.mark.electroid.electrical.ElectricalComponent;
 import java.util.ArrayList;

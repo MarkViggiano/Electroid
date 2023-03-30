@@ -4,14 +4,16 @@ import java.awt.Color;
 
 public enum SimulationStatus {
 
-  COMPLETED(Color.GREEN),
-  ERROR(Color.RED),
-  PROCESSING(Color.YELLOW),
-  STOPPED(Color.DARK_GRAY);
+  COMPLETED("Completed", Color.GREEN),
+  ERROR("Error", Color.RED),
+  PROCESSING("Processing", Color.YELLOW),
+  STOPPED("Stopped", Color.DARK_GRAY);
 
   private final Color color;
+  private final String name;
 
-  SimulationStatus(Color color) {
+  SimulationStatus(String name, Color color) {
+    this.name = name;
     this.color = color;
   }
 
@@ -19,4 +21,7 @@ public enum SimulationStatus {
     return color;
   }
 
+  public String getName() {
+    return name;
+  }
 }

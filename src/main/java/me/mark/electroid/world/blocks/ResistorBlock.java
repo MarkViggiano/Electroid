@@ -11,7 +11,7 @@ import me.mark.electroid.electrical.ComponentShape;
 import me.mark.electroid.electrical.Resistor;
 import me.mark.electroid.entity.ElectroidPlayer;
 import me.mark.electroid.items.Material;
-import me.mark.electroid.simulation.CircuitPath;
+import me.mark.electroid.electrical.circuit.CircuitPath;
 import me.mark.electroid.world.CircuitBlock;
 import java.awt.Color;
 import java.util.Collections;

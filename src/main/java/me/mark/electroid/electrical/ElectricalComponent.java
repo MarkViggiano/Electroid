@@ -6,7 +6,7 @@ import com.megaboost.visuals.Filter;
 import com.megaboost.world.Block;
 import com.megaboost.world.World;
 import me.mark.electroid.Electroid;
-import me.mark.electroid.simulation.CircuitPath;
+import me.mark.electroid.electrical.circuit.CircuitPath;
 import me.mark.electroid.simulation.SimulationManager;
 import java.awt.Color;
 import java.awt.Image;
