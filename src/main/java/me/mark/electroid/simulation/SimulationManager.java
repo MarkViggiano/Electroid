@@ -13,6 +13,7 @@ import me.mark.electroid.visual.CircuitFilter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -152,9 +153,10 @@ public class SimulationManager {
   }
 
   public List<ElectricalComponent> getNodes() {
-    Set<ElectricalComponent> nodeSet = this.circuitPathsByStartNode.keySet();
-    nodeSet.addAll(this.circuitPathsByEndNode.keySet());
-    return new ArrayList<>(nodeSet);
+    Set<ElectricalComponent> startSet = new HashSet<>(this.circuitPathsByStartNode.keySet());
+    Set<ElectricalComponent> endSet = new HashSet<>(this.circuitPathsByEndNode.keySet());
+    startSet.addAll(endSet);
+    return new ArrayList<>(startSet);
   }
 
   public SimulationStatus getStatus() {
