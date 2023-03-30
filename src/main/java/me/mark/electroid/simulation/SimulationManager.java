@@ -7,21 +7,18 @@ import me.mark.electroid.Electroid;
 import me.mark.electroid.electrical.ElectricalComponent;
 import me.mark.electroid.electrical.VoltageSource;
 import me.mark.electroid.electrical.circuit.CircuitPath;
-import me.mark.electroid.electrical.circuit.CircuitPathConnection;
 import me.mark.electroid.electrical.circuit.CircuitType;
 import me.mark.electroid.entity.ElectroidPlayer;
 import me.mark.electroid.visual.CircuitFilter;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public class SimulationManager {
 
   private final Electroid electroid;
-  private final List<ElectricalComponent> shortestPath;
-  //private final HashMap<CircuitPathConnection, List<CircuitPath>> circuitNodeConnections;
   private final HashMap<ElectricalComponent, List<CircuitPath>> circuitPathsByStartNode;
   private final HashMap<ElectricalComponent, List<CircuitPath>> circuitPathsByEndNode;
   private CircuitType type;
@@ -30,8 +27,6 @@ public class SimulationManager {
 
   public SimulationManager(Electroid electroid) {
     this.electroid = electroid;
-    this.shortestPath = new ArrayList<>();
-    //this.circuitNodeConnections = new HashMap<>();
     this.circuitPathsByStartNode = new HashMap<>();
     this.circuitPathsByEndNode = new HashMap<>();
     this.status = SimulationStatus.STOPPED;
@@ -52,8 +47,6 @@ public class SimulationManager {
     }
     this.circuitPathsByStartNode.clear();
     this.circuitPathsByEndNode.clear();
-    //this.circuitNodeConnections.clear();
-    this.shortestPath.clear();
 
     ElectricalComponent voltageSource = getVoltageSource();
     if (voltageSource == null) {
@@ -94,6 +87,7 @@ public class SimulationManager {
     ((ElectricalComponent) block.getGameObject()).processComponent(-xMod, -yMod, voltageSource.getBlock(), new CircuitPath(voltageSource));
     System.out.println("SIMULATION SUCCESSFULLY COMPLETED IN: " + (System.currentTimeMillis() - start) + "ms");
     System.out.println("CREATED: " + getCircuitPaths().size() + " Paths");
+    System.out.println("IDENTIFIED: " + getNodes().size() + " Nodes");
     for (List<CircuitPath> nodePaths : getCircuitPaths()) {
       for (CircuitPath path : nodePaths) {
         CircuitFilter filter = new CircuitFilter();
@@ -113,7 +107,6 @@ public class SimulationManager {
   }
 
   public void stopSimulation(String error) {
-    resetShortestPath();
     setStatus(SimulationStatus.STOPPED);
     ElectroidPlayer player = (ElectroidPlayer) getElectroid().getGame().getPlayer();
     player.sendMessage(Electroid.ERROR_PREFIX + error);
@@ -129,9 +122,6 @@ public class SimulationManager {
     circuitPaths = this.circuitPathsByEndNode.getOrDefault(path.getEndNode(), new ArrayList<>());
     circuitPaths.add(path);
     this.circuitPathsByEndNode.put(path.getEndNode(), circuitPaths);
-
-    //circuitPaths = this.circuitNodeConnections.getOrDefault(path.getCircuitPathConnection(), new ArrayList<>());
-    //this.circuitNodeConnections.put(path.getCircuitPathConnection(), circuitPaths);
   }
 
   public HashMap<ElectricalComponent, List<CircuitPath>> getCircuitMap() {
@@ -161,12 +151,10 @@ public class SimulationManager {
     return this.circuitPathsByStartNode.values();
   }
 
-  public List<ElectricalComponent> getShortestPath() {
-    return shortestPath;
-  }
-
-  private void resetShortestPath() {
-    this.shortestPath.clear();
+  public List<ElectricalComponent> getNodes() {
+    Set<ElectricalComponent> nodeSet = this.circuitPathsByStartNode.keySet();
+    nodeSet.addAll(this.circuitPathsByEndNode.keySet());
+    return new ArrayList<>(nodeSet);
   }
 
   public SimulationStatus getStatus() {
