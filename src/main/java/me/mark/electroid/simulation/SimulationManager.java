@@ -22,7 +22,8 @@ public class SimulationManager {
   private final Electroid electroid;
   private final List<ElectricalComponent> shortestPath;
   //private final HashMap<CircuitPathConnection, List<CircuitPath>> circuitNodeConnections;
-  private final HashMap<ElectricalComponent, List<CircuitPath>> circuitPaths;
+  private final HashMap<ElectricalComponent, List<CircuitPath>> circuitPathsByStartNode;
+  private final HashMap<ElectricalComponent, List<CircuitPath>> circuitPathsByEndNode;
   private CircuitType type;
   private SimulationStatus status;
   private VoltageSource voltageSource;
@@ -31,7 +32,8 @@ public class SimulationManager {
     this.electroid = electroid;
     this.shortestPath = new ArrayList<>();
     //this.circuitNodeConnections = new HashMap<>();
-    this.circuitPaths = new HashMap<>();
+    this.circuitPathsByStartNode = new HashMap<>();
+    this.circuitPathsByEndNode = new HashMap<>();
     this.status = SimulationStatus.STOPPED;
   }
 
@@ -48,7 +50,8 @@ public class SimulationManager {
         }
       }
     }
-    this.circuitPaths.clear();
+    this.circuitPathsByStartNode.clear();
+    this.circuitPathsByEndNode.clear();
     //this.circuitNodeConnections.clear();
     this.shortestPath.clear();
 
@@ -119,24 +122,43 @@ public class SimulationManager {
   }
 
   public void addCircuitPath(CircuitPath path) {
-    List<CircuitPath> circuitPaths = this.circuitPaths.getOrDefault(path.getStartNode(), new ArrayList<>());
+    List<CircuitPath> circuitPaths = this.circuitPathsByStartNode.getOrDefault(path.getStartNode(), new ArrayList<>());
     circuitPaths.add(path);
-    this.circuitPaths.put(path.getStartNode(), circuitPaths);
+    this.circuitPathsByStartNode.put(path.getStartNode(), circuitPaths);
+
+    circuitPaths = this.circuitPathsByEndNode.getOrDefault(path.getEndNode(), new ArrayList<>());
+    circuitPaths.add(path);
+    this.circuitPathsByEndNode.put(path.getEndNode(), circuitPaths);
 
     //circuitPaths = this.circuitNodeConnections.getOrDefault(path.getCircuitPathConnection(), new ArrayList<>());
     //this.circuitNodeConnections.put(path.getCircuitPathConnection(), circuitPaths);
   }
 
   public HashMap<ElectricalComponent, List<CircuitPath>> getCircuitMap() {
-    return circuitPaths;
+    return circuitPathsByStartNode;
   }
 
+  /**
+   * NOTE: There may be repeats within this list, this is used for optimizing the circuits.
+   * @param component | Component Node that can be a start or end node
+   * @return | A list of circuit paths this node is a part of
+   */
   public List<CircuitPath> getNodePaths(ElectricalComponent component) {
-    return this.circuitPaths.getOrDefault(component, new ArrayList<>());
+    List<CircuitPath> paths = getNodePathsByStartNode(component);
+    paths.addAll(getNodePathsByEndNode(component));
+    return paths;
+  }
+
+  public List<CircuitPath> getNodePathsByStartNode(ElectricalComponent component) {
+    return this.circuitPathsByStartNode.getOrDefault(component, new ArrayList<>());
+  }
+
+  public List<CircuitPath> getNodePathsByEndNode(ElectricalComponent component) {
+    return this.circuitPathsByEndNode.getOrDefault(component, new ArrayList<>());
   }
 
   public Collection<List<CircuitPath>> getCircuitPaths() {
-    return this.circuitPaths.values();
+    return this.circuitPathsByStartNode.values();
   }
 
   public List<ElectricalComponent> getShortestPath() {
