@@ -36,7 +36,7 @@ public class ResistorBlock extends WorldObject implements Placeable, Breakable, 
     this.voltage = 0;
     this.current = 0;
     this.drop = new ItemStack(Material.RESISTOR);
-    this.path = path;
+    this.path = null;
     ElectroidPlayer player = (ElectroidPlayer) Electroid.getInstance().getGame().getPlayer();
     this.rotation = player.getCursorRotation();
     String savedResistance = player.getHotBar().getItemInHand().getProperty("resistance").getSaveData();

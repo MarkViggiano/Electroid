@@ -6,7 +6,7 @@ import java.util.List;
 
 public class CircuitPath {
 
-  private final ElectricalComponent startNode;
+  private ElectricalComponent startNode;
   private final List<ElectricalComponent> components;
   private ElectricalComponent endNode;
   private double pathResistance;
@@ -30,6 +30,10 @@ public class CircuitPath {
 
     this.pathResistance = 0;
     for (ElectricalComponent electricalComponent : getComponents()) this.pathResistance += electricalComponent.getResistance();
+  }
+
+  public void setStartNode(ElectricalComponent startNode) {
+    this.startNode = startNode;
   }
 
   public void setEndNode(ElectricalComponent endNode) {

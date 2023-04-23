@@ -2,13 +2,11 @@ package me.mark.electroid.electrical;
 
 import com.megaboost.position.Location;
 import com.megaboost.utils.ImageUtil;
-import com.megaboost.visuals.Filter;
 import com.megaboost.world.Block;
 import com.megaboost.world.World;
 import me.mark.electroid.Electroid;
 import me.mark.electroid.electrical.circuit.CircuitPath;
 import me.mark.electroid.simulation.SimulationManager;
-import java.awt.Color;
 import java.awt.Image;
 
 public interface ElectricalComponent {
@@ -114,7 +112,6 @@ public interface ElectricalComponent {
     }
     //set end node in path
     //new paths from node in new directions
-    block.addFilter(new Filter(Color.WHITE));
     path.setEndNode(this);
     simulationManager.addCircuitPath(path);
     if (this instanceof VoltageSource) return;
