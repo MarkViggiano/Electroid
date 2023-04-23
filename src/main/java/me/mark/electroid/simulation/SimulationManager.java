@@ -50,6 +50,7 @@ public class SimulationManager {
     }
     this.circuitPathsByStartNode.clear();
     this.circuitPathsByEndNode.clear();
+    this.status = SimulationStatus.PROCESSING;
 
     ElectricalComponent voltageSource = getVoltageSource();
     if (voltageSource == null) {
@@ -126,6 +127,7 @@ public class SimulationManager {
 
     while (nodeOptimized) {
       nodeOptimized = false;
+      if (nodes.size() == 1) break;
       for (ElectricalComponent node : nodes) {
         System.out.println("Looping Nodes");
         if (deletedNodes.contains(node)) continue;
@@ -134,8 +136,8 @@ public class SimulationManager {
           startNode = path.getStartNode();
           endNode = path.getEndNode();
           if (path.getPathResistance() == 0) {
-            System.out.println("Path optimized");
             if (startNode == endNode) continue;
+            System.out.println("Path optimized");
 
             deletedNode = endNode;
             if (endNode instanceof VoltageSource) deletedNode = startNode;
@@ -143,11 +145,13 @@ public class SimulationManager {
 
             deletedNodes.add(deletedNode);
             paths.addAll(getNodePaths(deletedNode));
+            paths.remove(path);
             for (CircuitPath optimizedPath : paths) {
               if (optimizedPath.getStartNode() == deletedNode) optimizedPath.setStartNode(startNode);
               if (optimizedPath.getEndNode() == endNode) optimizedPath.setEndNode(startNode);
             }
             nodeOptimized = true;
+            continue;
 
           }
 
