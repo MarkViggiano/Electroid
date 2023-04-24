@@ -34,6 +34,7 @@ public interface ElectricalComponent {
    */
   default void resetComponent() {
     setPath(null);
+    updateComponentState(false);
   }
 
   default void updateComponentState(boolean updateNeighbors) {
@@ -104,7 +105,7 @@ public interface ElectricalComponent {
       //The shape of the block tells us we KNOW the block is not null and has an electrical component
       path.addComponent(this);
       if (nextBlock.getGameObject() == null) {
-        simulationManager.stopSimulation("Incomplete circuit!");
+        simulationManager.logSimulationError("Incomplete circuit!");
         return;
       }
       ((ElectricalComponent) nextBlock.getGameObject()).processComponent(-right + left + xPrior, up - down + yPrior, block, path);

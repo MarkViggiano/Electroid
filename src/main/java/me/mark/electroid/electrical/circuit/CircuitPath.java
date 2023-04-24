@@ -13,6 +13,7 @@ public class CircuitPath {
   public CircuitPath(ElectricalComponent startNode) {
     this.components = new ArrayList<>();
     this.connection = new CircuitPathConnection(startNode);
+    this.pathResistance = 0;
   }
 
   public ElectricalComponent getStartNode() {
@@ -28,11 +29,9 @@ public class CircuitPath {
   }
 
   public void addComponent(ElectricalComponent component) {
+    this.pathResistance += component.getResistance();
     this.components.add(component);
     component.setPath(this);
-
-    this.pathResistance = 0;
-    for (ElectricalComponent electricalComponent : getComponents()) this.pathResistance += electricalComponent.getResistance();
   }
 
   public void setStartNode(ElectricalComponent startNode) {

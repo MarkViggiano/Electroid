@@ -1,6 +1,7 @@
 package me.mark.electroid.simulation;
 
 import com.megaboost.position.Location;
+import com.megaboost.visuals.Filter;
 import com.megaboost.world.Block;
 import com.megaboost.world.World;
 import me.mark.electroid.Electroid;
@@ -10,6 +11,8 @@ import me.mark.electroid.electrical.circuit.CircuitPath;
 import me.mark.electroid.electrical.circuit.CircuitPathConnection;
 import me.mark.electroid.electrical.circuit.CircuitType;
 import me.mark.electroid.entity.ElectroidPlayer;
+import me.mark.electroid.visual.CircuitFilter;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -34,6 +37,17 @@ public class SimulationManager {
   }
 
   public void simulateCircuit() {
+    getPaths().forEach((connection, paths) -> {
+      connection.getStartNode().getBlock().clearFilters();
+      connection.getEndNode().getBlock().clearFilters();
+      for (CircuitPath path : paths) {
+        for (ElectricalComponent component : path.getComponents()) {
+          component.getBlock().clearFilters();
+          component.resetComponent();
+        }
+      }
+
+    });
     this.paths.clear();
     this.status = SimulationStatus.PROCESSING;
 
@@ -79,7 +93,6 @@ public class SimulationManager {
       return;
     }
 
-
     ((ElectricalComponent) block.getGameObject()).processComponent(-xMod, -yMod, voltageSource.getBlock(), new CircuitPath(voltageSource));
 
     if (this.paths.size() == 0) {
@@ -91,8 +104,12 @@ public class SimulationManager {
     AtomicReference<Double> voltage = new AtomicReference<>(voltageSource.getVoltage());
     LinkedHashMap<CircuitPathConnection, List<CircuitPath>> pathsMap = getPaths();
     pathsMap.forEach((connection, paths) -> {
+      System.out.println("path");
       double voltage_drop = 0.0;
+      connection.getStartNode().getBlock().addFilter(new Filter(Color.WHITE));
+      connection.getEndNode().getBlock().addFilter(new Filter(Color.WHITE));
       for (CircuitPath path : paths) {
+        for (ElectricalComponent component : path.getComponents()) component.getBlock().addFilter(new CircuitFilter());
         voltage_drop += (1/path.getPathResistance());
       }
 
