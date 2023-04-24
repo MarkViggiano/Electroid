@@ -6,18 +6,21 @@ import java.util.List;
 
 public class CircuitPath {
 
-  private ElectricalComponent startNode;
   private final List<ElectricalComponent> components;
-  private ElectricalComponent endNode;
+  private final CircuitPathConnection connection;
   private double pathResistance;
 
   public CircuitPath(ElectricalComponent startNode) {
-    this.startNode = startNode;
     this.components = new ArrayList<>();
+    this.connection = new CircuitPathConnection(startNode);
   }
 
   public ElectricalComponent getStartNode() {
-    return startNode;
+    return getConnection().getStartNode();
+  }
+
+  public CircuitPathConnection getConnection() {
+    return connection;
   }
 
   public List<ElectricalComponent> getComponents() {
@@ -33,15 +36,15 @@ public class CircuitPath {
   }
 
   public void setStartNode(ElectricalComponent startNode) {
-    this.startNode = startNode;
+    this.connection.setStartNode(startNode);
   }
 
   public void setEndNode(ElectricalComponent endNode) {
-    this.endNode = endNode;
+    this.connection.setEndNode(endNode);
   }
 
   public ElectricalComponent getEndNode() {
-    return endNode;
+    return getConnection().getEndNode();
   }
 
   public double getPathResistance() {

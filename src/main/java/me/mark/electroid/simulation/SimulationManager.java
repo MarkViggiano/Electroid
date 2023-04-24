@@ -1,37 +1,31 @@
 package me.mark.electroid.simulation;
 
 import com.megaboost.position.Location;
-import com.megaboost.visuals.Filter;
 import com.megaboost.world.Block;
 import com.megaboost.world.World;
 import me.mark.electroid.Electroid;
 import me.mark.electroid.electrical.ElectricalComponent;
 import me.mark.electroid.electrical.VoltageSource;
 import me.mark.electroid.electrical.circuit.CircuitPath;
+import me.mark.electroid.electrical.circuit.CircuitPathConnection;
 import me.mark.electroid.electrical.circuit.CircuitType;
 import me.mark.electroid.entity.ElectroidPlayer;
-import me.mark.electroid.visual.CircuitFilter;
-import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class SimulationManager {
 
   private final Electroid electroid;
-  private final HashMap<ElectricalComponent, List<CircuitPath>> circuitPathsByStartNode;
-  private final HashMap<ElectricalComponent, List<CircuitPath>> circuitPathsByEndNode;
+  private final LinkedHashMap<CircuitPathConnection, List<CircuitPath>> paths;
   private CircuitType type;
   private SimulationStatus status;
   private VoltageSource voltageSource;
 
   public SimulationManager(Electroid electroid) {
     this.electroid = electroid;
-    this.circuitPathsByStartNode = new HashMap<>();
-    this.circuitPathsByEndNode = new HashMap<>();
+    this.paths = new LinkedHashMap<>();
     this.status = SimulationStatus.STOPPED;
   }
 
@@ -40,24 +34,22 @@ public class SimulationManager {
   }
 
   public void simulateCircuit() {
-
-    for (List<CircuitPath> nodePaths : getCircuitPaths()) {
-      for (CircuitPath path : nodePaths) {
-        for (ElectricalComponent component : path.getComponents()) {
-          component.getBlock().clearFilters();
-        }
-      }
-    }
-    this.circuitPathsByStartNode.clear();
-    this.circuitPathsByEndNode.clear();
+    this.paths.clear();
     this.status = SimulationStatus.PROCESSING;
 
     ElectricalComponent voltageSource = getVoltageSource();
     if (voltageSource == null) {
-      stopSimulation("Missing Voltage Source!");
+      logSimulationError("Missing Voltage Source!");
       return;
     }
 
+    int[] blockMap = voltageSource.getComponentShape().getBlockMap();
+    if (blockMap[0] + blockMap[1] + blockMap[2] + blockMap[3] > 2) {
+      logSimulationError("Voltage Sources can only have two wires attached!");
+      return;
+    }
+
+    long start = System.currentTimeMillis();
     int rotation = voltageSource.getRotation();
     rotation = rotation % 360;
     if (rotation < 0) rotation += 360;
@@ -78,162 +70,56 @@ public class SimulationManager {
     World world = startLoc.getWorld();
     Block block = world.getBlockByWorldPosition(startLoc.getX() + (xMod * 50), startLoc.getY() + (yMod * 50));
     if (block == null) {
-      stopSimulation("Invalid starting block!");
+      logSimulationError("Invalid starting block! Failed after: " + (System.currentTimeMillis() - start) + "ms");
       return;
     }
 
     if (block.getGameObject() == null) {
-      stopSimulation("Missing starting component!");
+      logSimulationError("Missing starting component! Failed after: " + (System.currentTimeMillis() - start) + "ms");
       return;
     }
 
-    long start = System.currentTimeMillis();
+
     ((ElectricalComponent) block.getGameObject()).processComponent(-xMod, -yMod, voltageSource.getBlock(), new CircuitPath(voltageSource));
+
+    if (this.paths.size() == 0) {
+      logSimulationError("Short circuit detected! Failed after: " + (System.currentTimeMillis() - start) + "ms");
+      return;
+    }
+
+
+    AtomicReference<Double> voltage = new AtomicReference<>(voltageSource.getVoltage());
+    LinkedHashMap<CircuitPathConnection, List<CircuitPath>> pathsMap = getPaths();
+    pathsMap.forEach((connection, paths) -> {
+      double voltage_drop = 0.0;
+      for (CircuitPath path : paths) {
+        voltage_drop += (1/path.getPathResistance());
+      }
+
+      double finalVoltage_drop = 1 / voltage_drop;
+      voltage.updateAndGet(v -> v - finalVoltage_drop);
+
+    });
+
     System.out.println("SIMULATION SUCCESSFULLY COMPLETED IN: " + (System.currentTimeMillis() - start) + "ms");
-    System.out.println("CREATED: " + getCircuitPaths().size() + " Paths");
-    System.out.println("IDENTIFIED: " + getNodes().size() + " Nodes");
-
-    //optimize circuit
-    optimizeCircuit();
-    //determine circuit type
-    if (getCircuitPaths().size() == 1) setCircuitType(CircuitType.SERIES);
-
-    //calculate values
-
-    for (ElectricalComponent node : getNodes()) node.getBlock().addFilter(new Filter(Color.WHITE));
-    for (List<CircuitPath> nodePaths : getCircuitPaths()) {
-      for (CircuitPath path : nodePaths) {
-        CircuitFilter filter = new CircuitFilter();
-        for (ElectricalComponent component : path.getComponents()) {
-          component.getBlock().addFilter(filter);
-          component.resetComponent();
-        }
-      }
-    }
-  }
-
-  private void optimizeCircuit() {
-    List<ElectricalComponent> nodes = getNodes();
-    if (nodes.size() == 1) return;
-
-    HashSet<CircuitPath> paths = new HashSet<>();
-    List<ElectricalComponent> deletedNodes = new ArrayList<>();
-    boolean nodeOptimized = true;
-    ElectricalComponent startNode;
-    ElectricalComponent endNode;
-    ElectricalComponent deletedNode;
-
-    System.out.println("Starting node count: " + nodes.size());
-
-    while (nodeOptimized) {
-      nodeOptimized = false;
-      if (nodes.size() == 1) break;
-      for (ElectricalComponent node : nodes) {
-        System.out.println("Looping Nodes");
-        if (deletedNodes.contains(node)) continue;
-        for (CircuitPath path : getNodePaths(node)) {
-          System.out.println("Optimizing paths");
-          startNode = path.getStartNode();
-          endNode = path.getEndNode();
-          if (path.getPathResistance() == 0) {
-            if (startNode == endNode) continue;
-            System.out.println("Path optimized");
-
-            deletedNode = endNode;
-            if (endNode instanceof VoltageSource) deletedNode = startNode;
-
-
-            deletedNodes.add(deletedNode);
-            paths.addAll(getNodePaths(deletedNode));
-            paths.remove(path);
-            for (CircuitPath optimizedPath : paths) {
-              if (optimizedPath.getStartNode() == deletedNode) optimizedPath.setStartNode(startNode);
-              if (optimizedPath.getEndNode() == endNode) optimizedPath.setEndNode(startNode);
-            }
-            nodeOptimized = true;
-            continue;
-
-          }
-
-          System.out.println("Path not optimized!");
-          paths.add(path);
-
-        }
-
-        overrideNodeRegistration(node, new ArrayList<>(paths));
-        paths.clear();
-
-      }
-
-      nodes.removeAll(deletedNodes);
-      for (ElectricalComponent node : deletedNodes) deleteNodeRegistration(node);
-      deletedNodes.clear();
-      System.out.println("Remaining Nodes to Check: " + nodes.size());
-    }
-
-    //Temporary logging
-    System.out.println("Remaining Nodes: " + getNodes().size());
-
 
   }
 
-  public void stopSimulation(String error) {
+  public void logSimulationError(String error) {
     setStatus(SimulationStatus.STOPPED);
     ElectroidPlayer player = (ElectroidPlayer) getElectroid().getGame().getPlayer();
     player.sendMessage(Electroid.ERROR_PREFIX + error);
   }
 
   public void addCircuitPath(CircuitPath path) {
-    List<CircuitPath> circuitPaths = this.circuitPathsByStartNode.getOrDefault(path.getStartNode(), new ArrayList<>());
-    circuitPaths.add(path);
-    this.circuitPathsByStartNode.put(path.getStartNode(), circuitPaths);
-
-    circuitPaths = this.circuitPathsByEndNode.getOrDefault(path.getEndNode(), new ArrayList<>());
-    circuitPaths.add(path);
-    this.circuitPathsByEndNode.put(path.getEndNode(), circuitPaths);
+    if (path.getPathResistance() == 0) return;
+    List<CircuitPath> paths = this.paths.getOrDefault(path.getConnection(), new ArrayList<>());
+    paths.add(path);
+    this.paths.put(path.getConnection(), paths);
   }
 
-  public void overrideNodeRegistration(ElectricalComponent node, List<CircuitPath> paths) {
-    this.circuitPathsByStartNode.put(node, paths);
-  }
-
-  public void deleteNodeRegistration(ElectricalComponent node) {
-    this.circuitPathsByStartNode.remove(node);
-    this.circuitPathsByEndNode.remove(node);
-  }
-
-  public HashMap<ElectricalComponent, List<CircuitPath>> getCircuitMap() {
-    return circuitPathsByStartNode;
-  }
-
-  /**
-   * @param component | Component Node that can be a start or end node
-   * @return | A list of circuit paths this node is a part of
-   */
-  public List<CircuitPath> getNodePaths(ElectricalComponent component) {
-    Set<CircuitPath> startSet = new HashSet<>(getNodePathsByStartNode(component));
-    Set<CircuitPath> endSet = new HashSet<>(getNodePathsByEndNode(component));
-    startSet.addAll(endSet);
-    return new ArrayList<>(startSet);
-  }
-
-  public List<CircuitPath> getNodePathsByStartNode(ElectricalComponent component) {
-    return this.circuitPathsByStartNode.getOrDefault(component, new ArrayList<>());
-  }
-
-  public List<CircuitPath> getNodePathsByEndNode(ElectricalComponent component) {
-    return this.circuitPathsByEndNode.getOrDefault(component, new ArrayList<>());
-  }
-
-  public Collection<List<CircuitPath>> getCircuitPaths() {
-    return this.circuitPathsByStartNode.values();
-  }
-
-  public List<ElectricalComponent> getNodes() {
-    Set<ElectricalComponent> startSet = new HashSet<>(this.circuitPathsByStartNode.keySet());
-    Set<ElectricalComponent> endSet = new HashSet<>(this.circuitPathsByEndNode.keySet());
-    startSet.addAll(endSet);
-    return new ArrayList<>(startSet);
+  public LinkedHashMap<CircuitPathConnection, List<CircuitPath>> getPaths() {
+    return paths;
   }
 
   public SimulationStatus getStatus() {
