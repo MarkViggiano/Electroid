@@ -114,28 +114,35 @@ public interface ElectricalComponent {
     //set end node in path
     //new paths from node in new directions
     path.setEndNode(this);
+    if (simulationManager.isNodeDeleted(this)) path.setEndNode(simulationManager.getVoltageSource());
     simulationManager.addCircuitPath(path);
     if (this instanceof VoltageSource) return;
+
+    ElectricalComponent startNode = this;
+    if (path.getPathResistance() == 0) {
+      startNode = path.getStartNode();
+      simulationManager.addDeletedNode(this);
+    }
 
     Block upBlock = world.getBlockByWorldPosition(blockX, blockY - 50);
     if (upBlock != priorBlock)
       if (upBlock.getGameObject() != null)
-        ((ElectricalComponent) upBlock.getGameObject()).processComponent(0, 1, block, new CircuitPath(this));
+        ((ElectricalComponent) upBlock.getGameObject()).processComponent(0, 1, block, new CircuitPath(startNode));
 
     Block rightBlock = world.getBlockByWorldPosition(blockX + 50, blockY);
     if (rightBlock != priorBlock)
       if (rightBlock.getGameObject() != null)
-        ((ElectricalComponent) rightBlock.getGameObject()).processComponent(-1, 0, block, new CircuitPath(this));
+        ((ElectricalComponent) rightBlock.getGameObject()).processComponent(-1, 0, block, new CircuitPath(startNode));
 
     Block downBlock = world.getBlockByWorldPosition(blockX, blockY + 50);
     if (downBlock != priorBlock)
       if (downBlock.getGameObject() != null)
-        ((ElectricalComponent) downBlock.getGameObject()).processComponent(0, -1, block, new CircuitPath(this));
+        ((ElectricalComponent) downBlock.getGameObject()).processComponent(0, -1, block, new CircuitPath(startNode));
 
     Block leftBlock = world.getBlockByWorldPosition(blockX - 50, blockY);
     if (leftBlock != priorBlock)
       if (leftBlock.getGameObject() != null)
-        ((ElectricalComponent) leftBlock.getGameObject()).processComponent(1, 0, block, new CircuitPath(this));
+        ((ElectricalComponent) leftBlock.getGameObject()).processComponent(1, 0, block, new CircuitPath(startNode));
 
   }
 

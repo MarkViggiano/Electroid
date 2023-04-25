@@ -1,7 +1,6 @@
 package me.mark.electroid.simulation;
 
 import com.megaboost.position.Location;
-import com.megaboost.visuals.Filter;
 import com.megaboost.world.Block;
 import com.megaboost.world.World;
 import me.mark.electroid.Electroid;
@@ -11,16 +10,15 @@ import me.mark.electroid.electrical.circuit.CircuitPath;
 import me.mark.electroid.electrical.circuit.CircuitPathConnection;
 import me.mark.electroid.electrical.circuit.CircuitType;
 import me.mark.electroid.entity.ElectroidPlayer;
-import me.mark.electroid.visual.CircuitFilter;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Map;
 
 public class SimulationManager {
 
   private final Electroid electroid;
+  private final List<ElectricalComponent> deletedNodes;
   private final LinkedHashMap<CircuitPathConnection, List<CircuitPath>> paths;
   private CircuitType type;
   private SimulationStatus status;
@@ -28,6 +26,7 @@ public class SimulationManager {
 
   public SimulationManager(Electroid electroid) {
     this.electroid = electroid;
+    this.deletedNodes = new ArrayList<>();
     this.paths = new LinkedHashMap<>();
     this.status = SimulationStatus.STOPPED;
   }
@@ -37,18 +36,8 @@ public class SimulationManager {
   }
 
   public void simulateCircuit() {
-    getPaths().forEach((connection, paths) -> {
-      connection.getStartNode().getBlock().clearFilters();
-      connection.getEndNode().getBlock().clearFilters();
-      for (CircuitPath path : paths) {
-        for (ElectricalComponent component : path.getComponents()) {
-          component.getBlock().clearFilters();
-          component.resetComponent();
-        }
-      }
-
-    });
     this.paths.clear();
+    this.deletedNodes.clear();
     this.status = SimulationStatus.PROCESSING;
 
     ElectricalComponent voltageSource = getVoltageSource();
@@ -101,31 +90,47 @@ public class SimulationManager {
     }
 
 
-    AtomicReference<Double> voltage = new AtomicReference<>(voltageSource.getVoltage());
+    double voltage = voltageSource.getVoltage();
     LinkedHashMap<CircuitPathConnection, List<CircuitPath>> pathsMap = getPaths();
-    pathsMap.forEach((connection, paths) -> {
-      System.out.println("path");
-      double voltage_drop = 0.0;
-      connection.getStartNode().getBlock().addFilter(new Filter(Color.WHITE));
-      connection.getEndNode().getBlock().addFilter(new Filter(Color.WHITE));
-      for (CircuitPath path : paths) {
-        for (ElectricalComponent component : path.getComponents()) component.getBlock().addFilter(new CircuitFilter());
-        voltage_drop += (1/path.getPathResistance());
-      }
 
-      double finalVoltage_drop = 1 / voltage_drop;
-      voltage.updateAndGet(v -> v - finalVoltage_drop);
+    //calculate total resistance
+    double totalResistance = 0;
+    for (Map.Entry<CircuitPathConnection, List<CircuitPath>> entry : pathsMap.entrySet())
+      for (CircuitPath path : entry.getValue()) totalResistance += path.getPathResistance();
 
-    });
+    //calculate current
+    double current = voltage / totalResistance;
+    for (Map.Entry<CircuitPathConnection, List<CircuitPath>> entry : pathsMap.entrySet())
+      for (CircuitPath path : entry.getValue())
+        for (ElectricalComponent component : path.getComponents()) component.setCurrent(current);
+
+    //calculate voltage drop
+    double voltage_drop = 0;
+    for (Map.Entry<CircuitPathConnection, List<CircuitPath>> entry : pathsMap.entrySet())
+      for (CircuitPath path : entry.getValue())
+        for (ElectricalComponent component : path.getComponents()) {
+          if (component instanceof VoltageSource) continue;
+          component.setVoltage(voltage - voltage_drop);
+          voltage_drop += (component.getCurrent() * component.getResistance());
+        }
+
 
     System.out.println("SIMULATION SUCCESSFULLY COMPLETED IN: " + (System.currentTimeMillis() - start) + "ms");
-
+    setStatus(SimulationStatus.COMPLETED);
   }
 
   public void logSimulationError(String error) {
     setStatus(SimulationStatus.STOPPED);
     ElectroidPlayer player = (ElectroidPlayer) getElectroid().getGame().getPlayer();
     player.sendMessage(Electroid.ERROR_PREFIX + error);
+  }
+
+  public void addDeletedNode(ElectricalComponent node) {
+    this.deletedNodes.add(node);
+  }
+
+  public boolean isNodeDeleted(ElectricalComponent node) {
+    return this.deletedNodes.contains(node);
   }
 
   public void addCircuitPath(CircuitPath path) {

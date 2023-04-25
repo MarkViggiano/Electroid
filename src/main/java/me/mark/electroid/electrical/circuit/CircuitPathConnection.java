@@ -1,6 +1,7 @@
 package me.mark.electroid.electrical.circuit;
 
 import me.mark.electroid.electrical.ElectricalComponent;
+import java.util.Objects;
 
 /**
  * May be necessary in the future but for now we're keeping it out.
@@ -49,8 +50,12 @@ public class CircuitPathConnection {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     CircuitPathConnection connection = (CircuitPathConnection) o;
-    if (connection.getStartNode() == getStartNode() && connection.getEndNode() == getEndNode()) return true;
-    return connection.getStartNode() == getEndNode() && connection.getEndNode() == getStartNode();
+    if (getStartNode() == connection.getStartNode() && getEndNode() == connection.getEndNode()) return true;
+    return getEndNode() == connection.getStartNode() && getStartNode() == connection.getEndNode();
   }
 
+  @Override
+  public int hashCode() {
+    return Objects.hash(1);
+  }
 }

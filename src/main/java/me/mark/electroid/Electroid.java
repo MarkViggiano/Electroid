@@ -3,13 +3,16 @@ package me.mark.electroid;
 import com.megaboost.Game;
 import com.megaboost.command.Command;
 import com.megaboost.command.CommandManager;
+import com.megaboost.events.EventManager;
 import com.megaboost.world.WorldObjectPlaceManager;
 import me.mark.electroid.commands.BatteryCommand;
 import me.mark.electroid.commands.ResistorCommand;
 import me.mark.electroid.commands.RoomCommand;
+import me.mark.electroid.gui.analysismenu.AnalysisMenu;
 import me.mark.electroid.gui.loadmenu.LoadMenu;
 import me.mark.electroid.gui.mainmenu.MainMenu;
 import me.mark.electroid.gui.pausemenu.PauseMenu;
+import me.mark.electroid.listeners.WorldObjectBreakListener;
 import me.mark.electroid.network.ElectroidServer;
 import me.mark.electroid.simulation.SimulationManager;
 import me.mark.electroid.utils.ImageUtil;
@@ -36,6 +39,7 @@ public class Electroid {
   private final Logger logger;
   private final SimulationManager simulationManager;
   private final HashMap<String, ElectroidWorld> worlds;
+  private final AnalysisMenu analysisMenu;
   private static Electroid INSTANCE;
   public static final String ERROR_PREFIX = "ERROR> ";
   public static final String SYSTEM_PREFIX = "SYSTEM> ";
@@ -53,6 +57,7 @@ public class Electroid {
     this.mainMenu = new MainMenu();
     this.loadMenu = new LoadMenu();
     this.pauseMenu = new PauseMenu();
+    this.analysisMenu = new AnalysisMenu();
 
     start();
   }
@@ -62,6 +67,7 @@ public class Electroid {
     registerWorldObjects();
     registerSavedWorlds();
     registerCommands();
+    registerListeners();
   }
 
   private void registerWorldObjects() {
@@ -87,6 +93,12 @@ public class Electroid {
     commandManager.addCommand(new Command("battery", "Give yourself a battery!", "/battery <voltage>", new BatteryCommand()));
     commandManager.addCommand(new Command("resistor", "Give yourself a resistor!", "/resistor <resistance>", new ResistorCommand()));
     commandManager.addCommand(new Command("room", "Interact with a room", "/room", new RoomCommand()));
+  }
+
+  private void registerListeners() {
+    Game game = getGame();
+    EventManager em = game.getEventManager();
+    em.registerListener(new WorldObjectBreakListener(game));
   }
 
   public Logger getLogger() {
@@ -123,6 +135,10 @@ public class Electroid {
 
   public LoadMenu getLoadMenu() {
     return loadMenu;
+  }
+
+  public AnalysisMenu getAnalysisMenu() {
+    return analysisMenu;
   }
 
   public static Electroid getInstance() {
