@@ -95,8 +95,20 @@ public class SimulationManager {
 
     //calculate total resistance
     double totalResistance = 0;
-    for (Map.Entry<CircuitPathConnection, List<CircuitPath>> entry : pathsMap.entrySet())
-      for (CircuitPath path : entry.getValue()) totalResistance += path.getPathResistance();
+    for (Map.Entry<CircuitPathConnection, List<CircuitPath>> entry : pathsMap.entrySet()) {
+      if (entry.getValue().size() > 1) {
+        double parallel_resistance = 0;
+        for (CircuitPath path : entry.getValue()) {
+          parallel_resistance += (1 / path.getPathResistance());
+        }
+        totalResistance += (1 / parallel_resistance);
+      } else {
+        for (CircuitPath path : entry.getValue()) {
+          totalResistance += path.getPathResistance();
+        }
+      }
+
+    }
 
     //calculate current
     double current = voltage / totalResistance;
@@ -106,13 +118,27 @@ public class SimulationManager {
 
     //calculate voltage drop
     double voltage_drop = 0;
-    for (Map.Entry<CircuitPathConnection, List<CircuitPath>> entry : pathsMap.entrySet())
-      for (CircuitPath path : entry.getValue())
+    for (Map.Entry<CircuitPathConnection, List<CircuitPath>> entry : pathsMap.entrySet()) {
+
+      double parallel_resistance = 0;
+      if (entry.getValue().size() > 1) {
+        for (CircuitPath path : entry.getValue()) {
+          parallel_resistance += (1 / path.getPathResistance());
+        }
+        parallel_resistance = 1 / parallel_resistance;
+      }
+
+      for (CircuitPath path : entry.getValue()) {
         for (ElectricalComponent component : path.getComponents()) {
           if (component instanceof VoltageSource) continue;
           component.setVoltage(voltage - voltage_drop);
-          voltage_drop += (component.getCurrent() * component.getResistance());
+          if (entry.getValue().size() == 1) voltage_drop += (current * component.getResistance());
         }
+      }
+
+      voltage_drop += (current * parallel_resistance);
+
+    }
 
 
     System.out.println("SIMULATION SUCCESSFULLY COMPLETED IN: " + (System.currentTimeMillis() - start) + "ms");
