@@ -4,11 +4,12 @@ import com.megaboost.Game;
 import com.megaboost.components.TextComponent;
 import com.megaboost.position.Location;
 import me.mark.electroid.electrical.ElectricalComponent;
+import me.mark.electroid.gui.UpdatableComponent;
 import me.mark.electroid.gui.CenteredComponent;
 import java.awt.Color;
 import java.awt.Font;
 
-public class ComponentLabel extends TextComponent implements CenteredComponent, AnalysisComponent {
+public class ComponentLabel extends TextComponent implements CenteredComponent, UpdatableComponent {
 
   private static final Font LABEL_FONT = new Font("Times New Roman", Font.BOLD, 40);
 
@@ -22,5 +23,10 @@ public class ComponentLabel extends TextComponent implements CenteredComponent, 
     setText(component.getClass().getSimpleName());
     setWidth(Game.getInstance().getGraphics().getFontMetrics(getFont()).stringWidth(getText()) + getOffsetMargin());
     centerHorizontally();
+  }
+
+  @Override
+  public void updateComponent() {
+
   }
 }

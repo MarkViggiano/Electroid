@@ -12,6 +12,7 @@ import me.mark.electroid.gui.analysismenu.AnalysisMenu;
 import me.mark.electroid.gui.loadmenu.LoadMenu;
 import me.mark.electroid.gui.mainmenu.MainMenu;
 import me.mark.electroid.gui.pausemenu.PauseMenu;
+import me.mark.electroid.gui.simulationmenu.SimulationMenu;
 import me.mark.electroid.listeners.WorldObjectBreakListener;
 import me.mark.electroid.network.ElectroidServer;
 import me.mark.electroid.simulation.SimulationManager;
@@ -34,6 +35,7 @@ public class Electroid {
   private final MainMenu mainMenu;
   private final LoadMenu loadMenu;
   private final PauseMenu pauseMenu;
+  private final SimulationMenu simulationMenu;
   private final ImageUtil componentSheet;
   private final ElectroidServer server;
   private final Logger logger;
@@ -58,6 +60,7 @@ public class Electroid {
     this.loadMenu = new LoadMenu();
     this.pauseMenu = new PauseMenu();
     this.analysisMenu = new AnalysisMenu();
+    this.simulationMenu = new SimulationMenu();
 
     start();
   }
@@ -139,6 +142,10 @@ public class Electroid {
 
   public AnalysisMenu getAnalysisMenu() {
     return analysisMenu;
+  }
+
+  public SimulationMenu getSimulationMenu() {
+    return simulationMenu;
   }
 
   public static Electroid getInstance() {

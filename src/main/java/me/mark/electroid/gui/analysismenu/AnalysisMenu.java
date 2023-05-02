@@ -5,6 +5,7 @@ import com.megaboost.components.GameComponent;
 import com.megaboost.gui.menu.Menu;
 import com.megaboost.position.Location;
 import me.mark.electroid.electrical.ElectricalComponent;
+import me.mark.electroid.gui.UpdatableComponent;
 import java.awt.Color;
 import java.util.Arrays;
 
@@ -31,7 +32,7 @@ public class AnalysisMenu extends Menu {
 
   public void open(ElectricalComponent electricalComponent) {
     for (GameComponent component : getComponents()) {
-      if (component instanceof AnalysisComponent) ((AnalysisComponent) component).updateComponent(electricalComponent);
+      if (component instanceof UpdatableComponent) ((UpdatableComponent) component).updateComponent(electricalComponent);
     }
 
     setShown(true);

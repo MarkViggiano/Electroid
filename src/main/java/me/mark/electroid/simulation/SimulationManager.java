@@ -45,6 +45,7 @@ public class SimulationManager {
     this.status = SimulationStatus.PROCESSING;
     for (ElectricalComponent component : getComponents()) component.resetComponent();
     this.components.clear();
+    getElectroid().getSimulationMenu().updateMenu();
 
     ElectricalComponent voltageSource = getVoltageSource();
     if (voltageSource == null) {
@@ -172,12 +173,22 @@ public class SimulationManager {
 
     System.out.println("SIMULATION SUCCESSFULLY COMPLETED IN: " + (System.currentTimeMillis() - start) + "ms");
     setStatus(SimulationStatus.COMPLETED);
+    getElectroid().getSimulationMenu().updateMenu();
   }
 
   public void logSimulationError(String error) {
-    setStatus(SimulationStatus.STOPPED);
     ElectroidPlayer player = (ElectroidPlayer) getElectroid().getGame().getPlayer();
     player.sendMessage(Electroid.ERROR_PREFIX + error);
+    stopSimulator();
+  }
+
+  public void stopSimulator() {
+    this.paths.clear();
+    this.deletedNodes.clear();
+    this.status = SimulationStatus.STOPPED;
+    for (ElectricalComponent component : getComponents()) component.resetComponent();
+    this.components.clear();
+    getElectroid().getSimulationMenu().updateMenu();
   }
 
   public void addDeletedNode(ElectricalComponent node) {
