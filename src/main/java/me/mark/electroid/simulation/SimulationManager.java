@@ -10,7 +10,9 @@ import me.mark.electroid.electrical.circuit.CircuitPath;
 import me.mark.electroid.electrical.circuit.CircuitPathConnection;
 import me.mark.electroid.electrical.circuit.CircuitType;
 import me.mark.electroid.entity.ElectroidPlayer;
+import me.mark.electroid.visual.CircuitFilter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,7 @@ public class SimulationManager {
   private final Electroid electroid;
   private final List<ElectricalComponent> deletedNodes;
   private final LinkedHashMap<CircuitPathConnection, List<CircuitPath>> paths;
+  private final HashSet<ElectricalComponent> components;
   private CircuitType type;
   private SimulationStatus status;
   private VoltageSource voltageSource;
@@ -28,6 +31,7 @@ public class SimulationManager {
     this.electroid = electroid;
     this.deletedNodes = new ArrayList<>();
     this.paths = new LinkedHashMap<>();
+    this.components = new HashSet<>();
     this.status = SimulationStatus.STOPPED;
   }
 
@@ -39,6 +43,8 @@ public class SimulationManager {
     this.paths.clear();
     this.deletedNodes.clear();
     this.status = SimulationStatus.PROCESSING;
+    for (ElectricalComponent component : getComponents()) component.resetComponent();
+    this.components.clear();
 
     ElectricalComponent voltageSource = getVoltageSource();
     if (voltageSource == null) {
@@ -112,9 +118,24 @@ public class SimulationManager {
 
     //calculate current
     double current = voltage / totalResistance;
-    for (Map.Entry<CircuitPathConnection, List<CircuitPath>> entry : pathsMap.entrySet())
-      for (CircuitPath path : entry.getValue())
-        for (ElectricalComponent component : path.getComponents()) component.setCurrent(current);
+    boolean isSeries;
+    for (Map.Entry<CircuitPathConnection, List<CircuitPath>> entry : pathsMap.entrySet()) {
+      isSeries = entry.getValue().size() == 1;
+
+      double total_current = 0;
+      double path_current;
+      for (CircuitPath path : entry.getValue()) {
+        if (isSeries) for (ElectricalComponent component : path.getComponents()) component.setCurrent(current);
+        else {
+          path_current = voltage / path.getPathResistance();
+          total_current += path_current;
+          for (ElectricalComponent component : path.getComponents()) component.setCurrent(path_current);
+        }
+      }
+
+      if (!isSeries) current = total_current;
+
+    }
 
     //calculate voltage drop
     double voltage_drop = 0;
@@ -140,6 +161,14 @@ public class SimulationManager {
 
     }
 
+    //highlight paths
+    CircuitFilter filter;
+    for (Map.Entry<CircuitPathConnection, List<CircuitPath>> entry : pathsMap.entrySet()) {
+      filter = new CircuitFilter();
+      for (CircuitPath path : entry.getValue()) {
+        for (ElectricalComponent component : path.getComponents()) component.getBlock().addFilter(filter);
+      }
+    }
 
     System.out.println("SIMULATION SUCCESSFULLY COMPLETED IN: " + (System.currentTimeMillis() - start) + "ms");
     setStatus(SimulationStatus.COMPLETED);
@@ -176,6 +205,14 @@ public class SimulationManager {
 
   public void setStatus(SimulationStatus status) {
     this.status = status;
+  }
+
+  public HashSet<ElectricalComponent> getComponents() {
+    return components;
+  }
+
+  public void addComponent(ElectricalComponent component) {
+    this.components.add(component);
   }
 
   public CircuitType getCircuitType() {

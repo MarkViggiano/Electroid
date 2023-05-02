@@ -35,6 +35,7 @@ public interface ElectricalComponent {
   default void resetComponent() {
     setPath(null);
     updateComponentState(false);
+    getBlock().clearFilters();
   }
 
   default void updateComponentState(boolean updateNeighbors) {
@@ -98,6 +99,7 @@ public interface ElectricalComponent {
 
     if (getPath() != null) return;
     SimulationManager simulationManager = Electroid.getInstance().getSimulationManager();
+    simulationManager.addComponent(this); //it's a hashset, so it will automatically prevent duplicates!
     if (!isNode()) {
       int nextBlockX = blockX + (-(-right + left + xPrior) * 50);
       int nextBlockY = blockY - ((up - down + yPrior) * 50);
