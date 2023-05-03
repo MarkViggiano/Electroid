@@ -96,7 +96,6 @@ public class SimulationManager {
       return;
     }
 
-
     double voltage = voltageSource.getVoltage();
     LinkedHashMap<CircuitPathConnection, List<CircuitPath>> pathsMap = getPaths();
 
@@ -114,7 +113,6 @@ public class SimulationManager {
           totalResistance += path.getPathResistance();
         }
       }
-
     }
 
     //calculate current
@@ -122,7 +120,6 @@ public class SimulationManager {
     boolean isSeries;
     for (Map.Entry<CircuitPathConnection, List<CircuitPath>> entry : pathsMap.entrySet()) {
       isSeries = entry.getValue().size() == 1;
-
       double total_current = 0;
       double path_current;
       for (CircuitPath path : entry.getValue()) {
@@ -133,9 +130,7 @@ public class SimulationManager {
           for (ElectricalComponent component : path.getComponents()) component.setCurrent(path_current);
         }
       }
-
       if (!isSeries) current = total_current;
-
     }
 
     //calculate voltage drop
@@ -157,9 +152,7 @@ public class SimulationManager {
           if (entry.getValue().size() == 1) voltage_drop += (current * component.getResistance());
         }
       }
-
       voltage_drop += (current * parallel_resistance);
-
     }
 
     //highlight paths
@@ -179,7 +172,8 @@ public class SimulationManager {
   public void logSimulationError(String error) {
     ElectroidPlayer player = (ElectroidPlayer) getElectroid().getGame().getPlayer();
     player.sendMessage(Electroid.ERROR_PREFIX + error);
-    stopSimulator();
+    setStatus(SimulationStatus.ERROR);
+    getElectroid().getSimulationMenu().updateMenu();
   }
 
   public void stopSimulator() {

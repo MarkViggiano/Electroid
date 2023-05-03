@@ -18,6 +18,8 @@ public class SimulationMenu extends Menu {
 
   public SimulationMenu() {
     super(START_LOC, 300, 600, Arrays.asList(
+        new SimulationStatLabel(new Location(START_LOC.getX() + 20, START_LOC.getY() + 25), "STATUS:"),
+        new SimulationStatusLabel(new Location(START_LOC.getX() + 20, START_LOC.getY() + 65)),
         new StartSimulationButton(new Location(START_LOC.getX() + 20, START_LOC.getY() + 550)),
         new StopSimulationButton(new Location(START_LOC.getX() + 170, START_LOC.getY() + 550))
     ), false);
