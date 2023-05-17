@@ -164,7 +164,6 @@ public class SimulationManager {
       }
     }
 
-    System.out.println("SIMULATION SUCCESSFULLY COMPLETED IN: " + (System.currentTimeMillis() - start) + "ms");
     setStatus(SimulationStatus.COMPLETED);
     getElectroid().getSimulationMenu().updateMenu();
   }

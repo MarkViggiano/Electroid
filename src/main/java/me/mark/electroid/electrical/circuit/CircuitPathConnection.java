@@ -3,9 +3,6 @@ package me.mark.electroid.electrical.circuit;
 import me.mark.electroid.electrical.ElectricalComponent;
 import java.util.Objects;
 
-/**
- * May be necessary in the future but for now we're keeping it out.
- */
 public class CircuitPathConnection {
 
   private ElectricalComponent startNode;
