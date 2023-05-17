@@ -186,6 +186,7 @@ public class SimulationManager {
   }
 
   public void addDeletedNode(ElectricalComponent node) {
+    if (node instanceof VoltageSource) return;
     this.deletedNodes.add(node);
   }
 
