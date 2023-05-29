@@ -14,7 +14,6 @@ import me.mark.electroid.gui.mainmenu.MainMenu;
 import me.mark.electroid.gui.pausemenu.PauseMenu;
 import me.mark.electroid.gui.simulationmenu.SimulationMenu;
 import me.mark.electroid.listeners.WorldObjectBreakListener;
-import me.mark.electroid.network.ElectroidServer;
 import me.mark.electroid.simulation.SimulationManager;
 import me.mark.electroid.utils.ImageUtil;
 import me.mark.electroid.world.ElectroidWorld;
@@ -37,7 +36,6 @@ public class Electroid {
   private final PauseMenu pauseMenu;
   private final SimulationMenu simulationMenu;
   private final ImageUtil componentSheet;
-  private final ElectroidServer server;
   private final Logger logger;
   private final SimulationManager simulationManager;
   private final HashMap<String, ElectroidWorld> worlds;
@@ -54,7 +52,6 @@ public class Electroid {
     this.simulationManager = new SimulationManager(this);
     this.logger = Logger.getLogger("Electroid");
     this.worlds = new HashMap<>();
-    this.server = new ElectroidServer();
     this.componentSheet = new ImageUtil("/components.png", 51, 51);
     this.mainMenu = new MainMenu();
     this.loadMenu = new LoadMenu();
@@ -118,10 +115,6 @@ public class Electroid {
 
   public List<ElectroidWorld> getWorlds() {
     return this.worlds.values().stream().toList();
-  }
-
-  public ElectroidServer getServer() {
-    return server;
   }
 
   public Game getGame() {
